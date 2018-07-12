@@ -1,0 +1,28 @@
+#modalAddTournament.modal(style="overflow: visible !important;")
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Add Tournament
+        .hg-1
+        .row.box-x
+            .row.input-field.ifld
+                select(name="game", id="a_t_game")
+                    option(value='', disabled='', selected='') Select Game
+                    each game in games
+                        option(value=game._id) #{game.name}
+            .row.input-field.ifld
+                select(name="player_count", id="a_t_player_count")
+                    option(value='', disabled='', selected='') Select player Count
+                    option(value='4') 4
+                    option(value='8') 8
+                    option(value='16') 16
+                    option(value='32') 32
+            .row.input-field.ifld
+                select(name="bet", id="a_t_balance")
+                    option(value='', disabled='', selected='') Select balance
+                    option(value='10') 10
+                    option(value='20') 20
+                    option(value='50') 50
+                    option(value='100') 100
+            .row
+                p.left.red-text#login-msg.small
+            .row.center
+                button.btn.waves-effect.waves-light.center#createTurnamentBtn Add

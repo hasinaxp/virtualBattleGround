@@ -1,0 +1,8 @@
+#gc.l3.m4.s12.col
+    .card.gameCard.hoverable
+        .card-image
+            -var imgPath = "gameimg/" + game.image  
+            img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activator
+        .card-content
+            span.card-title.activator.grey-text.text-darken-4
+                | #{game.name}

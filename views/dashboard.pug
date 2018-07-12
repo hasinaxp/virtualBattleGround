@@ -1,0 +1,61 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="css/main.css")
+    link(rel="stylesheet", href="css/dash.css")
+
+
+
+block navigation
+    include ./core/nav/main.pug
+
+
+block content
+    //- dashboard collapse ui
+    .hg
+    .container
+        ul.collapsible.popout
+            li.active
+                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2 Clallanges 
+                .c3.collapsible-body
+                    span This section contains all the challenges you send or recieve.
+                    br
+                    .galary.challenge-list
+                        each cg in challenges
+                            include ./core/sticker/challangeCard.pug
+            li.active
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Matches 
+                .c3.collapsible-body
+                    span This section contains all the ongoing pvp matches.
+                    br
+                    .galary.challenge-list
+                        each cg in matches
+                            include ./core/sticker/matchCard.pug
+            li
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Game Library
+                .c3.collapsible-body
+                    span Current Includes
+                    br
+                    .row
+                        .galary.game-list
+                            each game in gamePocket
+                                include ./core/sticker/gameCardGameList.pug
+                    .row
+                        a#linkEditGames.btn-norm.waves-effect.tooltipped.waves-light.lighten-2.white-text.modal-trigger(href='#modalEditGameUser', data-position='bottom', data-delay='50', data-tooltip='add game')
+                            i.fa.fa-trophy.light-green-text.text-accent-3
+                            |                             add game
+    // dashboard collapse end here
+    .hg1
+
+    
+    include ./core/modal/dashboardModals.pug
+    include ./core/modal/matchAction.pug
+    include ./core/playBtn.pug
+
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="js/main.js")
+    script(src="js/dash.js")

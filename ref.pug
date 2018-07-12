@@ -1,0 +1,60 @@
+block content
+    .headerGuard
+    .headerGuard
+    .container
+        ul.collapsible.popout(data-collapsible='expandable')
+            li
+                .collapsible-header
+                    i.material-icons videogame_asset
+                    | Clallanges 
+                .collapsible-body
+                    .row.challenge-list
+                        each cg in challenges
+                            include ./core/challangeCard.pug
+                    
+            li
+                .collapsible-header
+                    i.material-icons videogame_asset
+                    |Matches 
+                .collapsible-body
+                    .row.challenge-list
+                        each cg in matches
+                            include ./core/matchCard.pug
+            li
+                .collapsible-header
+                    i.material-icons games
+                    | Game Library
+                    
+                .collapsible-body
+                    .row
+                        .row.game-list
+                            each game in gamePocket
+                                include ./core/gameCardGameList.pug
+                    .row
+                        a(href='#modalEditGameUser',data-position="bottom" data-delay="50" data-tooltip="add game").btn.waves-effect.tooltipped.waves-light.blue.lighten-2.white-text.modal-trigger#linkEditGames
+                            i.material-icons.left videogame_asset
+                            | add game
+
+
+    include ./core/playBtn.pug
+    include ./core/modals/editGames.pug
+    include ./core/modals/challange.pug
+    include ./core/modals/challangeSelect.pug
+    include ./core/modals/challangeCall.pug
+    include ./core/modals/challangeAction.pug
+    include ./core/modals/matchAction.pug
+
+    .headerGuard
+    .headerGuard
+    .headerGuard
+    .headerGuard
+
+
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="/socket.io/socket.io.js")
+    script(src="../js/dash.js")

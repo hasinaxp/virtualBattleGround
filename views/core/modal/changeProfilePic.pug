@@ -1,0 +1,15 @@
+#modalChangeProfilePic.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Upload Image
+        .container
+            .row
+                form(method='POST',action ='profile/update/image/'+user._id,enctype="multipart/form-data" ).col.s12#editProfileImageForm
+                    input(type='hidden', name='path', value=user.folder)
+                    .row.file-field.input-field
+                        a.btn
+                            span Image
+                            input(type='file',id="p_img", name='image', required).validate.
+                        .file-path-wrapper
+                            input.file-path.validate(type='text')
+                    .row.center
+                            button(type="submit" ).btn.cyan.waves-effect.waves-light.center Change

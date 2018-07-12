@@ -1,0 +1,37 @@
+#modalEditGameUser.modal
+    .modal-content
+        h2.center.flow-text Add Game
+        .hg-1
+        .game-Menu#egu1
+            ul.collection
+                each gameListItem in availableGames
+                    li.collection-item.avatar
+                        -var alpurl = "gameimg/"+ gameListItem.image
+                        img(src = alpurl).circle
+                        span.title.flow-text=gameListItem.name
+                        p.small-text
+                            case gameListItem.player_count
+                                when 1
+                                    | single player
+                                when 2
+                                    |multiplayer
+
+                        a.secondary-content(href='#', data-id=gameListItem._id ).white-text.btn-norm.waves-effect.waves-light.gameAddBtn1.small-1
+                            i.fa.fa-plus
+            
+        form#egu2(method="post", action="dashboard/game/add")
+            .headerGuard
+            .row
+                span#a_gameReqName.blue-text
+            .row
+                input(type='hidden', name='game_id' id='a_gameReqId')
+            .row.input-field.ifld
+                input(type="text" id="a_gameReqInp" name="contact_str").validate 
+                label(for='a_gameReqInp')#a_gameReqLab
+                br
+            .row.center
+                button(type="submit" ).btn-norm.center#addGameBtn Add
+
+
+
+        

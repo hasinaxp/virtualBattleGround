@@ -1,0 +1,8 @@
+.card.medium.carousel-item.gameCard-2.hoverable#gameCard.md-4.sm-12
+    .card-image
+    -var imgPath = "gameimg/" + game.image  
+        img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activate
+    .card-content
+        span.activator.grey-text.text-darken-4.small-text-bold
+            | #{game.name}
+            

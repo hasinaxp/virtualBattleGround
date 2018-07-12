@@ -1,0 +1,129 @@
+//-modal to add games to the dashboard
+#modalEditGameUser.modal
+    .modal-content
+        h2.center.flow-text Add Game
+        .hg-1
+        .game-Menu#egu1
+            ul.collection
+                each gameListItem in availableGames
+                    li.collection-item.avatar
+                        -var alpurl = "gameimg/"+ gameListItem.image
+                        img(src = alpurl).circle
+                        span.title.flow-text=gameListItem.name
+                        p.small-text
+                            case gameListItem.player_count
+                                when 1
+                                    | single player
+                                when 2
+                                    |multiplayer
+
+                        a.secondary-content(href='#', data-id=gameListItem._id ).white-text.btn-norm.waves-effect.waves-light.gameAddBtn1.small-1
+                            i.fa.fa-plus
+        form#egu2(method="post", action="dashboard/game/add")
+            .headerGuard
+            .row
+                span#a_gameReqName.blue-text
+            .row
+                input(type='hidden', name='game_id' id='a_gameReqId')
+            .row.input-field.ifld
+                input(type="text" id="a_gameReqInp" name="contact_str").validate 
+                label(for='a_gameReqInp')#a_gameReqLab
+                br
+            .row.center
+                button(type="submit" ).btn-norm.center#addGameBtn Add
+//-modal to initiate pvp challenges
+#modalChallange.modal(style="overflow: visible !important;")
+    .modal-content
+        #vers-1
+            h2.center.flow-text Challange
+            .hg-1
+            .row.game-Menu
+                each game in gamePocket
+                    case game.player_count
+                        when 1
+                            .col.s12.m6.l6
+                                a.card.challange-tile.hoverable(data-id=game._id, href="#").xpzsa
+                                    .card-image
+                                        -var imgPath = "gameimg/" + game.image  
+                                        img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activator
+                                        span.card-title #{game.name}
+        #vers-2
+            h2.grey-text.text-darken-1.center.flow-text.small-2
+                span Select Rival -
+                span.blue-text#gameChallangeResultName
+            .hg-1
+            .row.searchChallangeContainer
+                .input-field.col.s12
+                    i.material-icons.prefix search
+                    input(type='text', id='c-search')
+                    label(for="c-search") search
+            .row
+                ul.collection#c-result-container
+        #vers-3
+            h2.grey-text.text-darken-2.center.flow-text Challange
+            .hg-1
+            .row
+                .col.s5
+                    .row
+                        -var profileImage=proImg
+                            img(src=profileImage, width='100px', height='100px').circle.cent
+                .col.s2
+                    h2.center.pink-text.flow-text vs
+                .col.s5
+                    img(src='img/default.jpg', width='100px', height='100px').circle#c_oppi.bounceInDown.cent
+                .row
+                .col.s5
+                    h2.sp1.center-align.flow-text #{userName}
+                .col.s2
+                    span  
+                .col.s5
+                    h2.sp1.center-align.flow-text#c_oppn
+                
+            .row
+                .container
+                    form(method="post", action="dashboard/game/challange")
+                        .row
+                            input(type='hidden', name='game_id' id='c_gameReqId')
+                            input(type='hidden', name='challenger' id='c_gameReqChallenger')
+                            input(type='hidden', name='challanged' id='c_gameReqChallenged')
+                        .row
+                            .col.s2
+                            .input-field.col.s8
+                                select(name="balance", id="c_balance")
+                                    option(value='', disabled, selected) Select Bet
+                                    option(value='0') Free
+                                    option(value='10') 10 BP
+                                    option(value='20') 20 BP
+                                    option(value='50') 50 BP
+                                    option(value='100') 100 BP
+                                    option(value='500') 500 BP
+                                label(for="c_balance") bet
+                            .col.s2
+                        .row.center
+                            button(type="submit" ).btn-norm.waves-effect.waves-light.center#challangeBtnMain Challange
+//-modal to take action on a challenge
+#modalChallangeAction.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Challange
+    .hg-1
+    .container
+            .row
+                .row
+                    .col.s6
+                        span Challenger :
+                    .col.s6
+                        span#ca_challenger challenger name
+                .row
+                    .col.s6
+                        span Challenged :
+                    .col.s6
+                        span#ca_challenged challenged name
+                .row
+                    .col.s6
+                        span bet :
+                    .col.s6
+                        span#ca_bet cash BP
+            .row
+                .col.s12#ca_actionBtns
+                    a(href="#")#ca_decline.btn-flat.red-text decline 
+                    a(href="#")#ca_accept.btn-flat.green-text Accept

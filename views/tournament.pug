@@ -1,0 +1,39 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="css/main.css")
+    link(rel="stylesheet", href="css/dash.css")
+
+
+
+block navigation
+    include ./core/nav/main.pug
+
+
+block content
+    //- dashboard collapse ui
+    .hg
+    .container
+        ul.collapsible.popout
+            li.active
+                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2 Ongong Tournaments  
+                .c3.collapsible-body
+                    span This section contains all Ongong Tournaments.
+                    br
+                    .galary.tournament-list
+            li.active
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Perticipation Tournaments 
+                .c3.collapsible-body
+                    span This section contains all Perticipation Tournaments.
+                    br
+
+    // tournament collapse end here
+    .hg1
+
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="js/main.js")
+    script(src="js/torn.js")

@@ -1,0 +1,76 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="css/main.css")
+    link(rel="stylesheet", href="css/pro.css")
+
+
+
+
+block navigation
+    include ./core/nav/main.pug
+
+
+block content
+    .hg
+    .container
+        .row.box-x
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Profile Information - #{userName}
+                    .row
+                        .col.s4
+                            .card
+                                .card-image
+                                    img(src=proImg)#profileImage
+                        .col.s8
+                            h2.center.flow-text.cyan-text vbg-player
+                    .row
+                        .col.s4
+                            span.sp4 Name :
+                        .col.s8
+                            span=user.full_name
+                    .row
+                        .col.s4
+                            span.sp4 Email :
+                        .col.s8
+                            span=user.email
+                    if user.phone
+                        .row
+                            .col.s4
+                                span  :
+                            .col.s8
+                                span=user.phone
+                    .row
+                        .col.s4
+                            span.sp4 Balance :
+                        .col.s8
+                            span #{user.balance} BP
+    //-profile info board ends here
+    .hg
+    .container
+        .row.box-x
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Change Profile information
+                    .row.hg
+                    .row
+                        ul.profile-options
+                            li
+                                a.btn-opt.modal-trigger(href="#modalChangeProfilePic") Change Profile Image
+                            li
+                                a.btn-opt(href="#") Change Full Name
+                            li
+                                a.btn-opt(href="#") Change password
+
+
+    .hg1
+    
+    include ./core/modal/changeProfilePic.pug
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="js/main.js")
+    script(src="js/pro.js")

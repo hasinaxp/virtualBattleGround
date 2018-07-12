@@ -1,0 +1,19 @@
+#modalSubmitResult.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Upload Image
+        .container
+            .row
+                form(method='POST',action ='/match/claimVectory',enctype="multipart/form-data" )
+                    input(type='hidden', name='is_c', value=isChallenger)
+                    input(type='hidden', name='m_id', value=matchId)
+                    .file-field.input-field
+                        .btn
+                            span File
+                            input(type='file',name='image', required).validate.
+                        .file-path-wrapper
+                            input.file-path.validate(type='text')
+                    .row
+                        p.left.red-text#login-msg.small
+                    br
+                    .row.center
+                        button(type="submit" ).btn.waves-effect.waves-light.center#loginBtn.modal-trigger Submit Result

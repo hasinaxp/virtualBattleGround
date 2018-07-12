@@ -1,0 +1,22 @@
+#modalAddBP.modal(style="overflow: visible !important;")
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Add Battle Points
+        .container
+            form(method="post", action="wallet/add")
+                .hg
+                .row
+                    .col.s2
+                    .input-field.col.s8
+                        select(name="balance", id="c_balance")
+                            option(value='', disabled, selected) Ammount
+                            option(value='10') 10 BP
+                            option(value='50') 50 BP
+                            option(value='100') 100 BP
+                            option(value='500') 500 BP
+                            option(value='1000') 1000 BP
+                            option(value='5000') 5000 BP
+                            option(value='10000') 10000 BP
+                        label(for="c_balance") money
+                    .col.s2
+                .row.center
+                    button(type="submit" ).btn-norm.waves-effect.waves-light.center#challangeBtnMain ADD

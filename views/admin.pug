@@ -1,0 +1,75 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="../css/main.css")
+    link(rel="stylesheet", href="../css/adm.css")
+
+
+block navigation
+
+
+block content
+    .hg
+    .container
+        .row
+        .col.s12
+            //-tab links
+            ul.tabs.c2
+                li.tab.col.s4
+                    a.sp2.active(href='#pendingDecision') Pending Decision
+                li.tab.col.s4
+                    a.sp2(href='#editGames') Games
+                li.tab.col.s4
+                    a.sp2(href='#tournaments') Tournaments
+                li.tab.col.s4
+                    a.sp2(href='#statistics') Statistics
+        //-tab contents
+        .row.box-x#pendingDecision
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Pending Discissions
+                    .row.hg
+                    .row
+                        ul.collection.with-header
+                            each match in matches
+                                li.collection-item.c2
+                                    div
+                                        | #{match.gameName} &nbsp - &nbsp #{match.balance}BP &nbsp - &nbsp #{match.date}
+                                        a.red-text.secondary-content(href='#!', data-id=match._id)#takeDecisionBtn
+                                            i.material-icons gavel
+        .row.box-x#editGames
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Edit Games
+                    .row.hg
+                    .row
+                        .center-box
+                            a.btn-big.gap-1.modal-trigger(href='#modalAddGame') Add Game
+                            a.btn-big.modal-trigger(href='#modalRemoveGame') Remove Games
+        .row.box-x#tournaments
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Tournaments
+                    .row.hg
+                    .row
+                        .center-box
+                            a.btn-big.gap-1.modal-trigger(href='#modalAddTournament') Add Tournament
+                    
+                
+        .row.box-x#statistics
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title Statistics           
+    .hg1
+    //-game editing ends here
+
+    //-modal include
+    include ./core/modal/adminModals.pug
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="../js/main.js")
+    script(src="../js/adm.js")
+

@@ -1,0 +1,38 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="css/main.css")
+
+
+
+block navigation
+    include ./core/nav/home.pug
+
+
+block content
+    .parallax-container
+            .section.no-pad-bot
+                .container
+                h1.header.center.white-text.hx Get Started
+                br
+                .row.center
+                    h5.center.grey-text.text-lighten-5 start making money through compititive gaming
+                .row.center
+                    a(href="#modalRegister").btn-big.waves-effect.waves-dark.hoverable.modal-trigger register now
+                br
+            .parallax
+                img(src="img/background1.jpg", alt="")
+    
+    
+    include ./core/home/howItWorks.pug
+    include ./core/home/howToPlay.pug
+
+    include ./core/modal/register.pug
+    include ./core/modal/login.pug
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="js/main.js")
+    script(src="js/home.js")

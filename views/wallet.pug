@@ -1,0 +1,67 @@
+extends layout.pug
+block links
+    link(rel="stylesheet", href="css/main.css")
+    link(rel="stylesheet", href="css/pro.css")
+
+
+
+
+block navigation
+    include ./core/nav/main.pug
+
+
+block content
+    .hg
+    .container
+        .row.box-x
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title
+                     | Transaction Information - 
+                     .sp2 &nbsp #{userName}
+                    .row
+                        .col.s6
+                            span.sp2 BP :
+                        .col.s6
+                            span #{balance} BP
+                    .row
+                        .col.s6
+                            span.sp2 Withdrawable BP :
+                        .col.s6
+                            span #{withdrawable_bp} BP
+                    .hg
+                    .row
+                        table
+                            thead
+                                tr
+                                    th.sp4 BP AMMOUNT
+                                    th.sp4 DATE
+                                    th.sp4 STATUS 
+                                    //-draw / withdraw
+                            tbody
+        .row.box-x
+                .card.z-depth-2.c1.base
+                    .card-content
+                        span.card-title
+                        | Transfer Balance
+                        .row.hg
+                        .row
+                            .center-box
+                                a.btn-big.gap-1.modal-trigger(href='#modalAddBP') Add BP
+                                a.btn-big.modal-trigger(href='#modalConvertBP') Convert BP
+                           
+    //-content ends here
+    .hg
+    .hg
+
+    include ./core/modal/addBP.pug                   
+                            
+        
+block foot
+    include ./core/footer.pug
+
+
+
+block scripts
+    script(src="js/main.js")
+    script(src="js/pro.js")

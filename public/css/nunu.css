@@ -1,0 +1,43 @@
+.msgr
+{
+    color: #82ec1c !important;
+    margin-top: -12px !important;
+}
+.bubble
+{
+    border-bottom: 1px solid green;
+    border-left: 2px solid green;
+    margin: 5px;
+    margin-bottom: 10px !important;
+    padding: 4px;
+    padding-left: 10px;
+    box-sizing:border-box;
+    border-radius: 114px;
+}
+.s_name
+{
+    font-style:oblique;
+}
+.s_message
+{
+    margin-left: 20px;
+}
+.v
+{
+    color: #ffffff30;
+    font-size: 10px;
+}
+.v1
+{
+    color: #b2ff11;
+}
+.v2
+{
+    color: #59b7ee;
+}
+#chat-list-container
+{
+    max-height: 500px; 
+    overflow-y: scroll;
+    margin-bottom: 2rem;
+}

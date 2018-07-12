@@ -1,0 +1,37 @@
+.img-pin
+{
+  height: 3rem;
+  width: 3rem;
+  border-radius: 40px;
+}
+.bc
+{
+  display: flex;
+}
+.fix-1
+{
+  padding: 10px;
+  padding-left: 20px;
+  font-size: 18px;
+}
+.xpzsa
+{
+  margin: 1px;
+}
+.game-Menu
+{
+  height: 340px !important;
+  overflow-y: scroll;
+}
+#c-result-container
+{
+  height: 240px !important;
+  overflow-y: scroll;
+}
+
+@media only screen and (min-width: 600px) {
+    .cent
+    {
+      margin-left:30%;
+    }
+}

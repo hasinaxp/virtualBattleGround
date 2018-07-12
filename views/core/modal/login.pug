@@ -1,0 +1,17 @@
+#modalLogin.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Log In
+        .container
+            .row
+                form(method='POST' action ='func/sign/login' ).col.s12#loginForm
+                    .row.input-field.ifld
+                        input(type="email" id="l_email" name="email").validate 
+                        label(for='r_email') Email Id
+                    .row.input-field.ifld
+                        input(type="password" id="l_password" name="password").validate
+                        label(for='r_password') Password
+                    .row
+                        p.left.red-text#login-msg.small
+                    br
+                    .row.center
+                        button(type="submit" ).btn.waves-effect.waves-light.center#loginBtn.modal-trigger Log In

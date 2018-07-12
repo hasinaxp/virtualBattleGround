@@ -1,0 +1,14 @@
+
+a(href='/match/'+cg._id).matchActionView
+    .card-panel.valign-wrapper.card1
+        .row
+            h3.sp2.center-align.flow-text
+                | #{cg.gameName}
+                .row
+                    .col.s5
+                        img.circle.valign.profile-image.halign(width='100px', height='100px', alt='', src=cg.challenger.image)
+                    .col.s2
+                        span.sp1.center-align
+                            | vs
+                    .col.s5
+                        img.circle.valign.profile-image(width='100px', height='100px', alt='', src=cg.challenged.image)
