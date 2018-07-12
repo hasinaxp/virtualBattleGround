@@ -35,7 +35,6 @@ function requestData(url, id, cb) {
         body: JSON.stringify({
             gameId: id
         }),
-
     })
         .then(function (res) {
             if (res.status !== 200) {

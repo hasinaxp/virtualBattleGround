@@ -22,7 +22,6 @@ $(document).ready(function () {
                         res.status);
                     return;
                 }
-
                 // Examine the text in the response
                 res.json().then(function (data) {
                     let successReport = `${data.info.name} is added to games!`;
@@ -34,7 +33,6 @@ $(document).ready(function () {
         $(location).attr('href', '/admin')
         e.preventDefault();
     });
-
 
     //remove game
     $('#removeGameBtn').on('click', function (e) {
@@ -50,7 +48,6 @@ $(document).ready(function () {
                         res.status);
                     return;
                 }
-
                 // Examine the text in the response
                 res.json().then(function (data) {
                     let successReport = `remove process successful`;
@@ -64,45 +61,27 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-        //add game
-        $('#createTurnamentBtn').on('click', function (e) {
-            
-            let gameId = $('#a_t_game').val();
-            let playerCount = $('#a_t_player_count').val();
-            let balance = $('#a_t_balance').val();
-            fetch('tournament/create', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-type': 'application/json'
-                },
-                credentials: "same-origin",
-                body: JSON.stringify({
-                    game_id: gameId,
-                    player_count: playerCount,
-                    balance: balance
-                }),
-            })
-                .then(function (res) {
-                    if (res.status !== 200) {
-                        console.log('Looks like there was a problem. Status Code: ' +
-                            res.status);
-                        return;
-                    }
-                    // Examine the text in the response
-                    res.json().then(function (data) {
-                        if (data.error) {
-                            console.log(err);
-                        }
-                        if (data.status) {
-                            alert('tournament created successfully');
-                            $(location).attr('href', '/admin')
-                        }
-                    });
-                });//fetch call ends here
-            
-            e.preventDefault();
+    //add game
+    $('#createTurnamentBtn').on('click', function (e) {
+        let gameId = $('#a_t_game').val();
+        let playerCount = $('#a_t_player_count').val();
+        let balance = $('#a_t_balance').val();
+        let dataStruct = {
+            game_id: gameId,
+            player_count: playerCount,
+            balance: balance
+        };
+        postData('tournament/create',dataStruct, (data) => {
+            if (data.error) {
+                console.log(err);
+            }
+            if (data.status) {
+                alert('tournament created successfully');
+                $(location).attr('href', '/admin')
+            }
         });
+        e.preventDefault();
+    });
 
     $('#takeDecisionBtn').on('click', function () {
         matchID = $(this).data('id');
@@ -115,7 +94,6 @@ $(document).ready(function () {
                         res.status);
                     return;
                 }
-
                 // Examine the text in the response
                 res.json().then(function (data) {
                     console.log(data);
@@ -139,65 +117,35 @@ $(document).ready(function () {
         $('#modalDecision').modal('open');
     })
 
-
+    //-discicion on match winning
     $('#d-win1').on('click', function () {
-        fetch('/admin/makeVictor', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                m_id : matchID,
-                vic : 'p1'
-            })
-        })
-            .then(function (res) {
-                if (res.status !== 200) {
-                    console.log('Looks like there was a problem. Status Code: ' +
-                        res.status);
-                    return;
-                }
-
-                // Examine the text in the response
-                res.json().then(function (data) {
-                    let successReport = `challenger victory successful`;
-                    console.log(data);
-                    alert(successReport);
-                });
-                $('.modal').modal('close');
-                $(location).attr('href', '/admin');
-            });
+        let dataStruct = {
+            m_id: matchID,
+            vic: 'p1'
+        }
+        postData('/admin/makeVictor', dataStruct, (data) => {
+            let successReport = `challenger victory successful`;
+            console.log(data);
+            alert(successReport);
+        });
+        $('.modal').modal('close');
+        $(location).attr('href', '/admin');
     });
+
     $('#d-win2').on('click', function () {
-        fetch('/admin/makeVictor', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                m_id : matchID,
-                vic : 'p2'
-            })
-        })
-            .then(function (res) {
-                if (res.status !== 200) {
-                    console.log('Looks like there was a problem. Status Code: ' +
-                        res.status);
-                    return;
-                }
-
-                // Examine the text in the response
-                res.json().then(function (data) {
-                    let successReport = `challenger victory successful`;
-                    console.log(data);
-                    alert(successReport);
-                });
-                $('.modal').modal('close');
-                $(location).attr('href', '/admin');
-            });
+        let dataStruct = {
+            m_id: matchID,
+            vic: 'p2'
+        }
+        postData('/admin/makeVictor', dataStruct, (data) => {
+            let successReport = `challenger victory successful`;
+            console.log(data);
+            alert(successReport);
+        });
+        $('.modal').modal('close');
+        $(location).attr('href', '/admin');
     });
+});
 
 
 

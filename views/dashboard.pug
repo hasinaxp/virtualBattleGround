@@ -4,7 +4,6 @@ block links
     link(rel="stylesheet", href="css/dash.css")
 
 
-
 block navigation
     include ./core/nav/main.pug
 
@@ -43,12 +42,11 @@ block content
                         a#linkEditGames.btn-norm.waves-effect.tooltipped.waves-light.lighten-2.white-text.modal-trigger(href='#modalEditGameUser', data-position='bottom', data-delay='50', data-tooltip='add game')
                             i.fa.fa-trophy.light-green-text.text-accent-3
                             |                             add game
-    // dashboard collapse end here
+    //-dashboard collapse end here
     .hg1
 
     
     include ./core/modal/dashboardModals.pug
-    include ./core/modal/matchAction.pug
     include ./core/playBtn.pug
 
 block foot

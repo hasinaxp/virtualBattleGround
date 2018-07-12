@@ -169,7 +169,7 @@ $(document).ready(function () {
             $('#c_oppi').attr("src", data.image);
         });
         initiateHideSection(3);
-    })
+    });
 
     $('.challengeActionView').on('click', function (e) {
         let matchId = $(this).data('id');
