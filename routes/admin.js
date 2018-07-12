@@ -45,9 +45,7 @@ router.get('/', (req, res) => {
                     clng.date = m.date;
                     clng.balance = m.balance;
                     matchResults.push(clng);
-
             });
-
             //console.log(req.data._user);
             Game.find({}, (err, games) => {
                 if (err) console.log(err);
@@ -61,7 +59,6 @@ router.get('/', (req, res) => {
                 });
             });
         });
-
 });
 
 
@@ -138,16 +135,6 @@ router.post('/makeVictor', (req, res) => {
 
 });
 
-
-
-
-
-
-
-
-
-
-
 //game add route
 
 router.post('/game/add', gameimageUpload, (req, res) => {
@@ -187,11 +174,6 @@ router.post('/game/remove', nupload.fields([]), (req, res) => {
     });
 
 });
-
-
-
-
-
 
 
 

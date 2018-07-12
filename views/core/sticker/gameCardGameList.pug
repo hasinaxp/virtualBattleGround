@@ -4,8 +4,6 @@
             -var imgPath = "/gameimg/" + game.image
             -var deleteLink = 'dashboard/game/remove/' + game._id
             img(src=imgPath, alt="Chess")#gameImage.center.responsive-img.activator
-        
-            
         .card-reveal
             span.card-title.grey-text.text-darken-4.small-text-bold
                 | #{game.name}
@@ -13,7 +11,7 @@
             span.grey-text requitrment:
             span #{game.requirement}
             br
-            span.grey-text platform : 
+            span.grey-text platform :
             span
                 case game.platform
                     when 0

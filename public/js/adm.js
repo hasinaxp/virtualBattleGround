@@ -145,8 +145,5 @@ $(document).ready(function () {
         $('.modal').modal('close');
         $(location).attr('href', '/admin');
     });
-});
-
-
 
 });

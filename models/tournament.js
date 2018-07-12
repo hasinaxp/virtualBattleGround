@@ -26,18 +26,11 @@ let tournament8Schema = new schema({
 });
 
 let Tournament8 = module.exports = mongoose.model('tournament8', tournament8Schema);
-
 /*
 stage->
     1 - first stage
     2 - second stage
     3 - 3rd stage
     4 - final
-
-
-
-
-
-
 
 */

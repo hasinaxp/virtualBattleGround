@@ -12,26 +12,23 @@ let matchSchema = new schema({
     challenged_evidance: {type : String, required: false},
     challenger_evidance_state : {type: Boolean, default: false},
     challenged_evidance_state : {type: Boolean, default: false},
+    is_tournament : {type: Boolean, default: false},
     chatroom : { type : schema.Types.ObjectId, ref: 'chat'}
 });
 
 let Match = module.exports = mongoose.model('match', matchSchema);
 
 /*
-
 state code :
 0 - request sent
 1 - request accepted
 2 - challenger won
 3 - challanged won
-4 - challenge disput 
+4 - challenge disput
 
-
-
-color code
+color code :
 0 - challenger
 1 - challenged
 2 - system
-
 
 */

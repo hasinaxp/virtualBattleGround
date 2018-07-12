@@ -133,5 +133,4 @@ router.post('/update/password/:id', (req, res) => {
 });
 
 
-
 module.exports = router;

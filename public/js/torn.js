@@ -2,7 +2,6 @@ $(document).ready( function() {
     $('.modal').modal();
     $('.fixed-action-btn').floatingActionButton();
 
-
     $('select').formSelect();
     var snav = document.querySelector('.sidenav');
     var i_snav = M.Sidenav.init(snav);

@@ -22,7 +22,6 @@ $(document).ready(function() {
 
 
 
-
   //sockets magic
   const socket = io.connect('http://localhost:3000');
   const responseUrl = "msgcame" + $('#mx_id').val();
