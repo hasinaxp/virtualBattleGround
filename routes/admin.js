@@ -68,7 +68,6 @@ router.get('/', (req, res) => {
 
 router.get('/decision/:id', (req, res) => {
     Match.findById(req.params.id)
-        //.sort({ date: -1 })
         .populate('challenged challenger game')
         .exec((err, m) => {
             if (err) console.log(err);
@@ -104,7 +103,8 @@ router.post('/makeVictor', (req, res) => {
     let victor = req.body.vic;
     console.log(req.body);
     if(victor == 'p1') {
-        Match.findByIdAndUpdate(matchId, {$set: {state: 2}}, (err, m) => {
+        Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
+        .exec((err, m) => {
             if(err) console.log(err);
             let gain = FUNC.calculateReward(m.balance);
             User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
@@ -119,7 +119,8 @@ router.post('/makeVictor', (req, res) => {
         });
     }
     else {
-        Match.findByIdAndUpdate(matchId, {$set: {state: 3}}, (err, m) => {
+        Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
+        .exec((err, m) => {
             if(err) console.log(err);
             let gain = FUNC.calculateReward(m.balance);
             User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})

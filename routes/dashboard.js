@@ -14,7 +14,6 @@ const Chat = require('../models/chat');
 
 //dashboard home route
 router.get('/', (req, res) => {
-
     //loading game list
     Game.find({}, (err, games) => {
         if (err) console.log(err);
@@ -116,6 +115,7 @@ router.post('/game/add', (req, res) => {
             }
         }
     }, (err, raw) => {
+        if(err) console.log(err);
         res.redirect('/dashboard');
     });
 });
@@ -130,13 +130,13 @@ router.get('/game/remove/:id', (req, res) => {
         }
     })
     .exec( (err, dat) => {
+        if(err) console.log(err);
         res.redirect('/dashboard');
     });
 });
 
 //dashboard game challange route
 router.post('/game/challange', (req, res) => {
-
     if (req.body.balance <= req.data._user.balance) {
         let match = new Match();
         match.challenger = mongoose.Types.ObjectId(req.body.challenger);
@@ -162,7 +162,6 @@ router.post('/game/challange', (req, res) => {
 //dashboard challenge remove route
 
 router.get('/challenge/decline/:id', (req, res) => {
-    Match.remove({ _id: req.params.id })
     Match.findByIdAndRemove(req.params.id, (err, done) => {
         if (err) console.log(err);
         else {
@@ -177,6 +176,7 @@ router.get('/challenge/accept/:id', (req, res) => {
     Match.findById(req.params.id)
         .populate('challenged challenger')
         .exec((err, mx) => {
+            if(err) console.log(err);
             if ((mx.balance < mx.challenged.balance) && (mx.balance < mx.challenger.balance)) {
                 let chat = new Chat();
                 chat.save((err, chatInst) => {

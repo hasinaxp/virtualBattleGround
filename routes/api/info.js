@@ -11,10 +11,6 @@ const Game = require('../../models/game');
 const Match = require('../../models/match');
 
 
-
-
-
-
 //------------------------functional-----------------------------------------------------------
 router.post('/getRequirement', (req, res) => {
     Game.findById(req.body.gameId, (err, game) => {
