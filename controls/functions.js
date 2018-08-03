@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const Match = require('../models/match');
+const Tournament = require('../models/tournament');
+
+
 function calcLev(leaderPoint) {
     levelExp = 40;
     level = 0;
@@ -19,6 +23,16 @@ function calcLev(leaderPoint) {
         m_next : levelExp - lp,
         m_total :leaderPoint 
     }
+};
+function checkTournament(matchId, yesCallback, noCallback) {
+    Match.findById(matchId)
+    .exec((err, match)=> {
+        if(err) console.log(err);
+        if(match.is_tournament == true)
+            yesCallback;
+        else
+            noCallback;
+    });
 };
 
 exports.calculateLevel = calcLev;
@@ -200,6 +214,25 @@ exports.makeString = (type) => {
         return `error! undefined type : ${type}`
     }
 }
+
+
+//tournament helper function
+exports.isTournament = checkTournament;
+
+exports.getTournamentStatus = (tournamentId, cb) =>{
+    Tournament.findById(tournamentId)
+    .exec((err, t) => {
+        if(err) console.log(err);
+        cb(t);
+    })
+}
+exports.initTournament = (tournamentId, cb) =>{
+    Tournament.findById(tournamentId)
+    .exec((err, tour) => {
+        if(err) console.log(err);
+        cb(t);
+    })
+};
 
 
 

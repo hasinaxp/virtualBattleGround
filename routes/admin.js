@@ -5,7 +5,7 @@ const FUNC = require('../controls/functions');
 
 
 const router = express.Router();
-//pokemon porn
+
 //setting up the storage
 const gameStorage = multer.diskStorage({
     destination: './public/gameimg/',
@@ -102,38 +102,40 @@ router.post('/makeVictor', (req, res) => {
     let matchId = req.body.m_id;
     let victor = req.body.vic;
     console.log(req.body);
-    if(victor == 'p1') {
-        Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
-        .exec((err, m) => {
-            if(err) console.log(err);
-            let gain = FUNC.calculateReward(m.balance);
-            User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-            .exec((err, s)=> {
-                if(err) console.log(err);
-                res.json({
-                    data : s,
-                    status : 'success'
-                })
-            });
-            
-        });
-    }
-    else {
-        Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
-        .exec((err, m) => {
-            if(err) console.log(err);
-            let gain = FUNC.calculateReward(m.balance);
-            User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-            .exec((err, s)=> {
-                if(err) console.log(err);
-                res.json({
-                    data : s,
-                    status : 'success'
-                })
-            });
-        });
-    }
+    FUNC.isTournament(matchId, () => {
 
+    },() => {
+        if(victor == 'p1') {
+            Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
+            .exec((err, m) => {
+                if(err) console.log(err);
+                let gain = FUNC.calculateReward(m.balance);
+                User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
+                .exec((err, s)=> {
+                    if(err) console.log(err);
+                    res.json({
+                        data : s,
+                        status : 'success'
+                    })
+                });              
+            });
+        }
+        else {
+            Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
+            .exec((err, m) => {
+                if(err) console.log(err);
+                let gain = FUNC.calculateReward(m.balance);
+                User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
+                .exec((err, s)=> {
+                    if(err) console.log(err);
+                    res.json({
+                        data : s,
+                        status : 'success'
+                    })
+                });
+            });
+        }
+    });
 });
 
 //game add route

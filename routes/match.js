@@ -6,7 +6,6 @@ const authenticate = require('../controls/authenticate');
 const FUNC = require('../controls/functions');
 const router = express.Router();
 
-
 //authentication kick 
 router.use(authenticate.kick);
 
@@ -80,33 +79,36 @@ router.get('/:id', (req, res) => {
 // admitting defeat
 router.post('/admitDefeate', (req, res) => {
     console.log(req.body);
-    if(req.body.is_c == 0){//if challenger wins
-        Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 2}})
-        .exec((err,m)=> {
-            if(err) console.log(err);
-            console.log(m);
-            let gain = FUNC.calculateReward(m.balance);
-            User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-            .exec((err, s)=> {
-                console.log(gain);
-            });
-            res.redirect('/dashboard');
-        });
-    }
-    else {//if challenged wins
-        Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 3}})
+    FUNC.isTournament(req.body.m_id,()=> {
+
+    },()=>{
+        if(req.body.is_c == 0){//if challenger wins
+            Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 2}})
             .exec((err,m)=> {
-            if(err) console.log(err);
-            console.log(m);
-            let gain = FUNC.calculateReward(m.balance);
-            User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-            .exec((err, s)=> {
-                console.log(gain);
+                if(err) console.log(err);
+                console.log(m);
+                let gain = FUNC.calculateReward(m.balance);
+                User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
+                .exec((err, s)=> {
+                    console.log(gain);
+                });
+                res.redirect('/dashboard');
             });
-            res.redirect('/dashboard');
-        });
-    }
-       
+        }
+        else {//if challenged wins
+            Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 3}})
+                .exec((err,m)=> {
+                if(err) console.log(err);
+                console.log(m);
+                let gain = FUNC.calculateReward(m.balance);
+                User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
+                .exec((err, s)=> {
+                    console.log(gain);
+                });
+                res.redirect('/dashboard');
+            });
+        }
+    }); 
 });
 //claiming victory
 router.post('/claimVectory',imageUpload, (req, res) => {

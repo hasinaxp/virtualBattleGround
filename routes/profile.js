@@ -74,7 +74,7 @@ router.post('/update/phone/:id', (req, res) => {
         if(err) console.log(err);
         else{
             console.log('phone number updated successfully!');
-            //TODO: validate phone number
+            //TODO: validate phone number, update 
             res.redirect('/profile');
         } 
     });
@@ -120,7 +120,6 @@ router.post('/update/password/:id', (req, res) => {
 
                         });
                     });
-
                 }
                 else {
                     console.log('wrong password!');

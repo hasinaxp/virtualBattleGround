@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authenticate = require('../controls/authenticate');
+const FUNC = require('../controls/functions');
 const router = express.Router();
 router.use(authenticate.kick);
 
@@ -40,21 +41,19 @@ router.get('/', (req, res) => {
 
 router.get('/join/:tournament_id/:_id', (req, res) => {
     let _id = mongoose.Types.ObjectId(req.params._id);
-    Tournament.findById(req.params.tournament_id)
-    .exec((err, tournament) => {
-        if(err) console.log(err);
-        if(tournament.join_counter <= tournament.player_count) {
-            let query = `{$set: {player_${tournament.join_counter} : ${_id}}}`;
-        Tournament.findByIdAndUpdate(req.params.tournament_id, query)
+   FUNC.getTournamentStatus( req.params.tournament_id,(tournament) => {
+        if(tournament.join_counter < tournament.player_count) {
+        Tournament.findByIdAndUpdate(req.params.tournament_id, {$push : {players : req.params._id}})
         .exec((err, joined)=> {
             if(err) console.log(err);
             //TODO : redirect to that specific tournament page
         });
-        } else {
-            //TODO: tournament filled ... joining closed!
+        } else if({
+            FUNC.initTournament()
         }
     });
 });
+
 
 
 module.exports = router;
