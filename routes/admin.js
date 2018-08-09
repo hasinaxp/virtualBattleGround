@@ -27,9 +27,11 @@ const nupload = multer();
 const User = require('../models/user');
 const Game = require('../models/game');
 const Match = require('../models/match');
+const Tournament = require('../models/tournament');
 
 //admin home route
 router.get('/', (req, res) => {
+    //finding matches
     Match.find({ state : 4 })
         //.sort({ date: -1 })
         .populate('challenged challenger game')
@@ -46,17 +48,36 @@ router.get('/', (req, res) => {
                     clng.balance = m.balance;
                     matchResults.push(clng);
             });
-            //console.log(req.data._user);
+            //finding games
             Game.find({}, (err, games) => {
                 if (err) console.log(err);
-                res.render('admin', {
-                    pageTitle: 'admin',
-                    testMsg: 'working fine',
-                    games: games,
-                    userName: 'Spandan Mondal',
-                    userCnt: 100000,
-                    matches: matchResults
-                });
+                
+                //finding tournaments
+                Tournament.find()
+                .populate('game')
+                .exec((err, tournaments) => {
+                    if(err) console.log(err);
+                    let tournamentsOngoing =[],
+                        tournamentsYetToStart =[];
+                    tournaments.forEach( tour => {
+                        if(tour.stage == 0)
+                            tournamentsYetToStart.push(tour);
+                        else
+                            tournamentsOngoing.push(tour);
+                    });
+
+                    res.render('admin', {
+                        pageTitle: 'admin',
+                        testMsg: 'working fine',
+                        games: games,
+                        userName: 'Spandan Mondal',
+                        userCnt: 100000,
+                        matches: matchResults,
+                        tournaments_ongoing : tournamentsOngoing,
+                        tournaments_yet_to_start : tournamentsYetToStart
+                    });
+
+                })
             });
         });
 });

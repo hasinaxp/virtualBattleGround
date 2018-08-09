@@ -18,9 +18,17 @@ router.post('/create', (req, res) => {
     tournament.balance = req.body.balance;
     tournament.player_count = req.body.player_count;
     tournament.game = req.body.game_id;
+    //calculating maximum number of stages
+    let i = 0, cap = req.body.player_count;
+    while(cap > 1){
+        i++;
+        cap /=2;
+    }
+    tournament.max_stage = i;
     tournament.save((err, s) => {
         if(err) console.log(err);
         else {
+            console.log(s);
             res.json({
                 status: `done`
             });
@@ -48,12 +56,11 @@ router.get('/join/:tournament_id/:_id', (req, res) => {
             if(err) console.log(err);
             //TODO : redirect to that specific tournament page
         });
-        } else if({
-            FUNC.initTournament()
+        } else{
+            //FUNC.initTournament()
         }
     });
 });
-
 
 
 module.exports = router;

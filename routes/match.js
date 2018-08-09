@@ -48,7 +48,6 @@ router.get('/:id', (req, res) => {
             }
             let ur = isChallenger ? match.challenged : match.challenger;
             let challengerStatus = isChallenger ? 1 : 0;
-            console.log(ur);
             ur.games.forEach(g => {
                 if (match.game._id.equals(g._id)) {
                     console.log('matched!');
@@ -57,6 +56,7 @@ router.get('/:id', (req, res) => {
             });
 
             res.render('match', {
+                pageTitle : 'match',
                 gameName: match.game.name,
                 c_ref: contactReferance,
                 matchId: match._id,

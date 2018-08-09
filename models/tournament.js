@@ -9,7 +9,9 @@ let tournamentSchema = new schema({
     compilation : {type: Number, default: 0},
     join_counter : {type: Number, default: 1},
     player_count : {type: Number, required: true},
+    stage : {type: Number, default : 0},
     matches: [{type: schema.Types.ObjectId, ref: 'match'}],
+    date : {type: Date, default: Date.now}
 });
 
 let Tournament = module.exports = mongoose.model('tournament', tournamentSchema);

@@ -1,0 +1,15 @@
+.card.tournamentCard.hoverable.card1
+    .card-image
+        -var imgPath = "gameimg/" + tour.game.image  
+        img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activator
+    .card-content
+        
+    .card-reveal
+        span.card-title.grey-text.text-darken-4.small-text-bold
+            | #{tour.game.name}
+            i.material-icons.right close
+        span.grey-text Player Count:
+        span.sp2 #{tour.player_count}
+        br
+        span.grey-text Balance: 
+        span.sp2 #{tour.balance}

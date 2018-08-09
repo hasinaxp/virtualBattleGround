@@ -3,6 +3,10 @@ $(document).ready(function () {
     $('.modal').modal();
     $('select').formSelect();
     $('.tabs').tabs();
+    let popCollapsible = document.querySelector('.collapsible.popout');
+    let i_popCollapsible = M.Collapsible.init(popCollapsible, {
+        accordion: false
+    });
 
     //------------------------global----------------------------------
     let matchID = '';
