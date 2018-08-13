@@ -150,4 +150,24 @@ $(document).ready(function () {
         $(location).attr('href', '/admin');
     });
 
+    loadFeeds();
+
 });
+function deleteFeed(id) {
+    getData('admin/feed/delete/'+ id, (data) => {
+        loadFeeds();
+    });
+}
+//feed collection
+function loadFeeds(){
+    let template ='';
+    getData('/admin/feed', (data) => {
+        console.log(data);
+        data.feeds.forEach( f => {
+            template += `<li class="collection-item c2">
+        <div>${f.title}<a href="#!" data-id='${f._id}' onclick="deleteFeed('${f._id}');" id="deleteFeedBtn" class="red-text secondary-content"><i class="material-icons">close</i></a></div>
+          </li>`;
+        });
+        $('#feedCollection').html(template);
+    })
+}

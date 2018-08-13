@@ -77,9 +77,31 @@ block content
         .row.box-x#feeds
             .card.z-depth-2.c1.base
                 .card-content
-                    span.card-title Add Feeds
-                    form(action="admin/feed/add", method="post")
-                              
+                    span.card-title.sp2 Add Feeds
+                    form(action="admin/feed/add", method="post", enctype="multipart/form-data")
+                        .row
+                            .col.s12
+                                .row
+                                    .input-field.col.s12
+                                        input(type='text', name='title')#feedTitle.sp1
+                                        label(for="feedTitle") Title
+                                .row
+                                    .file-field.input-field.col.s12
+                                        .btn
+                                            span File
+                                            input(type='file', name='image' multiple='')
+                                        .file-path-wrapper
+                                            input.file-path.validate(type='text', placeholder='Upload one or more Images').sp1
+                                .row
+                                    .input-field.col.s12
+                                        textarea(name='content').materialize-textarea#feedContent.sp1
+                                        label(for='feedContent') Content
+                                .row.center
+                                    button(type="submit" ).btn-norm.waves-effect.waves-light.center#feedBtnMain ADD Feed
+            .card.z-depth-2.c1.base
+                .card-content
+                    span.card-title.sp2 feedList
+                    ul.collection#feedCollection
                     
                 
         .row.box-x#statistics

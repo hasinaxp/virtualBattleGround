@@ -23,6 +23,30 @@ function postData(url, info, cb){
     });//fetch call ends here
 };
 
+function getData(url, cb) {
+    fetch(url, {
+        method: 'get',
+        headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-type': 'application/json'
+        },
+        credentials: "same-origin",
+    })
+        .then(function (res) {
+            if (res.status !== 200) {
+                console.log('Looks like there was a problem. Status Code: ' +
+                    res.status);
+                return;
+            }
+            // Examine the text in the response
+            res.json().then(function (data) {
+                if (data.status) {
+                    cb(data)
+                }
+
+            });
+        });//fetch call ends here
+}
 
 function requestData(url, id, cb) {
     fetch(url, {

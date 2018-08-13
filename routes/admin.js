@@ -4,6 +4,7 @@ const path = require('path');
 const FUNC = require('../controls/functions');
 
 
+
 const router = express.Router();
 
 //setting up the storage
@@ -14,7 +15,21 @@ const gameStorage = multer.diskStorage({
         req.data = data;
         cb(null, req.body.name + data.exten);
     }
+});
 
+const prepareStorage = (req, res, next) =>{
+    req.imageStringArray = [];
+    return next();
+}
+const feedImageStorage = multer.diskStorage({
+    destination: './public/feedimage/',
+    filename: (req, file, cb) => {
+        let nameFile = FUNC.makeString('media') + path.extname(file.originalname);
+        //pushing the path to the iamge array
+        req.imageStringArray.push(nameFile);
+        console.log(nameFile);
+        cb(null, nameFile);
+    }
 });
 
 const gameimageUpload = multer({
@@ -28,6 +43,7 @@ const User = require('../models/user');
 const Game = require('../models/game');
 const Match = require('../models/match');
 const Tournament = require('../models/tournament');
+const Feed = require('../models/feed');
 
 //admin home route
 router.get('/', (req, res) => {
@@ -65,7 +81,6 @@ router.get('/', (req, res) => {
                         else
                             tournamentsOngoing.push(tour);
                     });
-
                     res.render('admin', {
                         pageTitle: 'admin',
                         testMsg: 'working fine',
@@ -199,7 +214,41 @@ router.post('/game/remove', nupload.fields([]), (req, res) => {
 
 });
 
-
+//feed add route
+router.post('/feed/add', prepareStorage, multer({storage: feedImageStorage}).array('image', 10),(req, res) => {
+    console.log(req.body);
+    console.log(req.imageStringArray);
+    let feed = new Feed();
+    feed.title = req.body.title;
+    feed.content = req.body.content;
+    feed.images = req.imageStringArray;
+    feed.date  = Date.now();
+    feed.save((err, f)=> {
+        if(err) console.log(err);
+        res.redirect('/admin'); 
+    });
+});
+router.get('/feed', (req, res) => {
+    Feed.find({})
+    .exec((err, feeds) => {
+        if(err) console.log(err);
+        console.log(feeds);
+        res.json({
+            feeds : feeds,
+            status: 1
+        })
+    });
+});
+router.get('/feed/delete/:id', (req, res) => {
+    Feed.findByIdAndRemove(req.params.id)
+    .exec((err, rem) => {
+        if(err) console.log(err);
+        res.json({
+                msg : `feed removed successfuly`,
+                status: 1
+        });
+    });
+})
 
 
 module.exports = router;

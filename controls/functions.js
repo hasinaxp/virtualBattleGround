@@ -208,7 +208,10 @@ exports.makeString = (type) => {
         return text;
     }
     else if(type == 'user') {
-        'u-' + new Date().valueOf() + '-'+ Math.random().toString(36).substring(4);
+        return 'u-' + new Date().valueOf() + '-'+ Math.random().toString(36).substring(4);
+    }
+    else if(type == 'media') {
+        return 'media-' + new Date().valueOf() + '-'+ Math.random().toString(36).substring(4);
     }
     else {
         return `error! undefined type : ${type}`

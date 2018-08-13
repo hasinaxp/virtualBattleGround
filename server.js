@@ -37,7 +37,8 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 //set up local
 app.locals.dat = {
-    basePath: __dirname
+    basePath: __dirname,
+    stringArray : []
 }
 
 //set up middle-wares
