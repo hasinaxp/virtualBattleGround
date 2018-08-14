@@ -15,16 +15,31 @@ block content
     .container
         ul.collapsible.popout
             li.active
-                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2 Ongong Tournaments  
+                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2 Perticipating Tournaments  
                 .c3.collapsible-body
                     span This section contains all Ongong Tournaments.
                     br
                     .galary.tournament-list
+                        each tour in tournaments_ongoing
+                            -var tLink = "tournament/"+ tour._id
+                            a(href=tLink).card.tournamentCard.hoverable.card1
+                                .card-image
+                                    -var imgPath = "gameimg/" + tour.game.image  
+                                    img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activator
+                                .card-content
             li.active
-                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Perticipation Tournaments 
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 New Tournaments 
                 .c3.collapsible-body
                     span This section contains all Perticipation Tournaments.
                     br
+                    .galary.tournament-list
+                        each tour in tournaments_yet_to_start
+                            -var tLink = "tournament/"+ tour._id
+                            a(href=tLink).card.tournamentCard.hoverable.card1
+                                .card-image
+                                    -var imgPath = "gameimg/" + tour.game.image  
+                                    img(src=imgPath, alt="#{game.name}")#gameImage.center.responsive-img.activator
+                                .card-content
 
     // tournament collapse end here
     .hg1

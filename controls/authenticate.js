@@ -5,7 +5,9 @@ exports.kick = (req, res, next) => {
     let ly = req.cookies.logauty;
     User.count({ email: lx, connection_string: ly }, (err, c) => {
         if (c > 0) {
-            User.findOne({ email: lx }, (err, user) => {
+            User.findOne({ email: lx })
+            .exec((err, user) => {
+                if(err) console.log(err);
                 if (user) {
                     req.data = { _user: user };
                     User.findOneAndUpdate({email: lx}, {$set: {date: Date.now()}})
