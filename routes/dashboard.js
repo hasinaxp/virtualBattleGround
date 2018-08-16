@@ -83,7 +83,15 @@ router.get('/', (req, res) => {
 
 });
 //-----------------------------error Routes----------------------------------
+//error
+router.get('/error', (req, res) => {
+    res.render('error', {
+        pageTitle: 'error',
+        errorMessage1: `Given data is incorrect`,
+        errorMessage2: `please provide Correct Data`
 
+    });
+});
 //balance error
 router.get('/balanceError', (req, res) => {
     res.render('error', {

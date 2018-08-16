@@ -30,11 +30,11 @@ function checkTournament(matchId, yesCallback, noCallback) {
     Match.findById(matchId)
         .exec((err, match) => {
             if (err) console.log(err);
-            if (match.is_tournament == true){
+            if (match.is_tournament == true) {
                 console.log('tournament match');
                 yesCallback();
             }
-            else{
+            else {
                 noCallback();
             }
         });
@@ -222,8 +222,34 @@ exports.makeString = (type) => {
         return `error! undefined type : ${type}`
     }
 }
+//calculating bp
+exports.calcBalance = (user_id, bp, mode, cb) => {
+    let log = {};
+    log.date = Date.now();
+    log.bp = bp;
+    log.mode = mode;
+    bp = mode * bp;
+    if (mode < 0) {
+        User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp }, $push: { balance_log: log } })
+            .exec((err, u) => {
+                if (err) console.log(err);
+                cb();
+            })
+    } else {
+        User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp, total_bp_win: bp }, $push: { balance_log: log } })
+            .exec((err, u) => {
+                if (err) console.log(err);
+                cb();
+            })
+    }
+};
 
 
+//disission
+exports.matchDission = (matchId, winner, type, cb) => {
+
+
+};
 //tournament helper function
 exports.isTournament = checkTournament;
 
@@ -264,11 +290,11 @@ exports.initTournament = (tournamentId, cb) => {
                 if (err)
                     console.log(err);
                 else {
-                    Tournament.findByIdAndUpdate(tournamentId, {$set : {matchs : matchIds, stage: 1, compilation : 0}})
-                    .exec((err, t) => {
-                        if(err) console.log(err);
-                        cb(t);
-                    })
+                    Tournament.findByIdAndUpdate(tournamentId, { $set: { matchs: matchIds, stage: 1, compilation: 0 } })
+                        .exec((err, t) => {
+                            if (err) console.log(err);
+                            cb(t);
+                        })
                 }
             });
         });
@@ -277,6 +303,15 @@ exports.initTournament = (tournamentId, cb) => {
 exports.advanceStage = (tournamentId, cb) => {
 
 };
+
+//get user info
+exports.userInfoGetter = (user_id, cb) => {
+    User.findById(user_id)
+    .exec((err, user) => {
+        if(err) console.log(err);
+        cb(user);
+    })
+}
 
 
 
