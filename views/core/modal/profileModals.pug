@@ -14,3 +14,33 @@
                             input.file-path.validate(type='text')
                     .row.center
                             button(type="submit" ).btn.cyan.waves-effect.waves-light.center Change
+//-change profile name
+#modalChangeProfileName.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Change Name
+        .container
+            .row
+                form(method='POST',action ='profile/update/name/'+user._id).col.s12#editProfileName
+                    .row.input-field.ifld
+                        input(type="text" id="p_name" name="name").validate 
+                        label(for='p_name') New Name
+                    .row.center
+                            button(type="submit" ).btn.cyan.waves-effect.waves-light.center Change
+//-change profile password
+#modalChangeProfilePassword.modal
+    .modal-content
+        h2.grey-text.text-darken-2.center.flow-text Change Password
+        .container
+            .row
+                form(method='POST',action ='profile/update/name/'+user._id).col.s12#editPassword
+                    input(type='hidden', id='x-code', value=user._id)
+                    .row.input-field.ifld
+                        input(type="password" id="p_passOld" name="paassword").validate 
+                        label(for='p_passOld') Old Password
+                    .row.input-field.ifld
+                        input(type="password" id="p_passNew" name="password_new").validate 
+                        label(for='p_passNew') New Password
+                    .row
+                            p.left.red-text#errMsgPassword.small
+                    .row.center
+                            button(type="submit").btn.cyan.waves-effect.waves-light.center Change

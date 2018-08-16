@@ -52,6 +52,20 @@ $(document).ready(function(){
             });//fetch call ends here
     });
 
+    $('#editPassword').on('submit', function(e) {
+        e.preventDefault();
+        let dataSet = {};
+        dataSet.password = document.getElementById('p_passOld').value;
+        dataSet.password_new = document.getElementById('p_passNew').value;
+        let url = `profile/update/password/${document.getElementById('x-code').value}`;
+        console.log(url);
+        postData(url,dataSet, (data) =>{
+            if(data.status == 0)
+                $('#errMsgPassword').text(`old password doesn't match`);
+        });
+        
+    });
+
 
 
     

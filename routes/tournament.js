@@ -21,10 +21,13 @@ router.post('/create', (req, res) => {
     tournament.game = req.body.game_id;
     //calculating maximum number of stages
     let i = 0, cap = req.body.player_count;
+    let match_array = [];
     while (cap > 1) {
         i++;
         cap /= 2;
+        match_array.push(cap);
     }
+    tournament.matches_per_round = match_array;
     tournament.max_stage = i;
     tournament.join_counter = 1;
     tournament.save((err, s) => {
@@ -43,13 +46,13 @@ router.get('/', (req, res) => {
     let myGames = [];
     req.data._user.games.forEach(g => myGames.push(mongoose.Types.ObjectId(g._id)));
     Tournament.find()
-    .populate('game')
+        .populate('game')
         .exec((err, tournaments) => {
             if (err) console.log(err);
             let tournamentsOngoing = [],
                 tournamentsYetToStart = [];
             tournaments.forEach(tour => {
-                if (tour.stage == 0)
+                if (tour.players.includes(mongoose.Types.ObjectId(req.data._user._id)))
                     tournamentsYetToStart.push(tour);
                 else
                     tournamentsOngoing.push(tour);
@@ -68,47 +71,62 @@ router.get('/', (req, res) => {
 
 });
 
-router.get('/join/:tournament_id/:_id', (req, res) => {
-    let _id = mongoose.Types.ObjectId(req.params._id);
+router.get('/join/:tournament_id', (req, res) => {
+    let id = mongoose.Types.ObjectId(req.data._user._id);
     FUNC.getTournamentStatus(req.params.tournament_id, (tournament) => {
-        if (tournament.join_counter < tournament.player_count) {
-            Tournament.findByIdAndUpdate(req.params.tournament_id, { $push: { players: req.params._id }, $inc : {join_counter : 1} })
+        if (req.data._user.balance > tournament.balance) {
+            User.findByIdAndUpdate(req.data._user._id, {$inc : {balance : -(tournament.balance)},})
+            .exec((err, usd) =>{
+                if(err) console.log(err);
+            Tournament.findByIdAndUpdate(req.params.tournament_id, { $push: { players: id }, $inc: { join_counter: 1 } })
                 .exec((err, joined) => {
                     if (err) console.log(err);
-                    //TODO : redirect to that specific tournament page
+                    if (tournament.join_counter < tournament.player_count) {
+                        res.json({
+                            status : 1
+                        })
+                    } else {
+                        FUNC.initTournament(req.params.tournament_id, (tournament) => {
+                            console.log(tournament);
+                            res.json({
+                                status : 1
+                            })
+                        });
+                    }
                 });
-        } else {
-            FUNC.initTournament(req.params.tournament_id, (tournament) => {
-                console.log(tournament);
+            });
+        }else {
+            res.json({
+                status : 0
             });
         }
     });
 });
 
-router.get('/:id',(req,res)=>{
+router.get('/:id', (req, res) => {
 
     Tournament.findById(req.params.id)
-    .populate('game')
-    .exec((err,tournament)=> {
-        if(err) console.log(err);
-        let prize = Math.floor((tournament.balance * tournament.player_count) * 9/10);
-        let prize1 = Math.floor(prize * 0.6);
-        let prize2 = Math.floor(prize * 0.4);
+        .populate('game')
+        .exec((err, tournament) => {
+            if (err) console.log(err);
+            let prize = Math.floor((tournament.balance * tournament.player_count) * 9 / 10);
+            let prize1 = Math.floor(prize * 0.6);
+            let prize2 = Math.floor(prize * 0.4);
 
-        res.render('tournamentDetail', {
-            gameName : tournament.game.name,
-            tournamentId : tournament._id,
-            capacity : tournament.player_count,
-            prize1 : prize1,
-            prize2 : prize2,
-            bet : tournament.balance,
-            time : tournament.date,
-            stage : tournament.stage,
-            pageTitle: 'tournament | detail',
-            isPlaying : false
-        })
+            res.render('tournamentDetail', {
+                gameName: tournament.game.name,
+                tournamentId: tournament._id,
+                capacity: tournament.player_count,
+                prize1: prize1,
+                prize2: prize2,
+                bet: tournament.balance,
+                time: tournament.date,
+                stage: tournament.stage,
+                pageTitle: 'tournament | detail',
+                isPlaying: false
+            })
 
-    });
+        });
 
 });
 

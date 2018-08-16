@@ -123,7 +123,7 @@ router.post('/update/password/:id', (req, res) => {
                 }
                 else {
                     console.log('wrong password!');
-                    res.json({ errorCode : 1 });
+                    res.json({ errorCode : 1, status : 0 });
                 }
             });
         }

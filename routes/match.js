@@ -75,6 +75,7 @@ router.get('/:id', (req, res) => {
         });
 });
 
+
 //-------------------------match functions-----------------------------------------------
 // admitting defeat
 router.post('/admitDefeate', (req, res) => {
@@ -86,7 +87,6 @@ router.post('/admitDefeate', (req, res) => {
             Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 2}})
             .exec((err,m)=> {
                 if(err) console.log(err);
-                console.log(m);
                 let gain = FUNC.calculateReward(m.balance);
                 User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
                 .exec((err, s)=> {
@@ -99,7 +99,6 @@ router.post('/admitDefeate', (req, res) => {
             Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 3}})
                 .exec((err,m)=> {
                 if(err) console.log(err);
-                console.log(m);
                 let gain = FUNC.calculateReward(m.balance);
                 User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
                 .exec((err, s)=> {

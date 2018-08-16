@@ -30,10 +30,13 @@ function checkTournament(matchId, yesCallback, noCallback) {
     Match.findById(matchId)
         .exec((err, match) => {
             if (err) console.log(err);
-            if (match.is_tournament == true)
-                yesCallback;
-            else
-                noCallback;
+            if (match.is_tournament == true){
+                console.log('tournament match');
+                yesCallback();
+            }
+            else{
+                noCallback();
+            }
         });
 };
 
@@ -231,6 +234,7 @@ exports.getTournamentStatus = (tournamentId, cb) => {
             cb(t);
         })
 }
+
 exports.initTournament = (tournamentId, cb) => {
     Tournament.findById(tournamentId)
         .exec((err, tournament) => {
@@ -268,6 +272,9 @@ exports.initTournament = (tournamentId, cb) => {
                 }
             });
         });
+};
+
+exports.advanceStage = (tournamentId, cb) => {
 
 };
 
