@@ -84,27 +84,23 @@ router.post('/admitDefeate', (req, res) => {
 
     },()=>{
         if(req.body.is_c == 0){//if challenger wins
-            Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 2}})
-            .exec((err,m)=> {
-                if(err) console.log(err);
-                let gain = FUNC.calculateReward(m.balance);
-                User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-                .exec((err, s)=> {
-                    console.log(gain);
+            FUNC.matchDission(req.body.m_id, 'challenger',(info) => {
+                let reward = FUNC.calculateReward(info.bp);
+                FUNC.calculateBalance(info.winner,reward.m_bp, 1,"Won in Match", ()=> {
+                    FUNC.calculateLeaderPoints(info.winner,reward.m_lp, () => {
+                        res.redirect('/dashboard');
+                    });
                 });
-                res.redirect('/dashboard');
             });
         }
         else {//if challenged wins
-            Match.findByIdAndUpdate(req.body.m_id,{$set:{state: 3}})
-                .exec((err,m)=> {
-                if(err) console.log(err);
-                let gain = FUNC.calculateReward(m.balance);
-                User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-                .exec((err, s)=> {
-                    console.log(gain);
+            FUNC.matchDission(req.body.m_id, 'challenged',(info) => {
+                let reward = FUNC.calculateReward(info.bp);
+                FUNC.calculateBalance(info.winner,reward.m_bp, 1, "Won in Match", ()=> {
+                    FUNC.calculateLeaderPoints(info.winner,reward.m_lp, () => {
+                        res.redirect('/dashboard');
+                    });
                 });
-                res.redirect('/dashboard');
             });
         }
     }); 

@@ -195,6 +195,7 @@ exports.calculateAchievements = (bp, lp, win) => {
     }
 }
 
+
 exports.calculateReward = (battlePoints) => {
     let bp = Math.floor(battlePoints * 1.8);
     let lp = Math.floor(battlePoints * 0.6 + 1);
@@ -223,31 +224,79 @@ exports.makeString = (type) => {
     }
 }
 //calculating bp
-exports.calcBalance = (user_id, bp, mode, cb) => {
+exports.calculateBalance = (user_id, bp, mode,text, cb) => {
     let log = {};
     log.date = Date.now();
     log.bp = bp;
     log.mode = mode;
+    log.text = text;
     bp = mode * bp;
-    if (mode < 0) {
-        User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp }, $push: { balance_log: log } })
-            .exec((err, u) => {
-                if (err) console.log(err);
-                cb();
-            })
-    } else {
-        User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp, total_bp_win: bp }, $push: { balance_log: log } })
-            .exec((err, u) => {
-                if (err) console.log(err);
-                cb();
-            })
-    }
+    User.findById(user_id)
+    .exec((err, userData) => {
+        if(err) console.log(err);
+        let newWithdrawableBalance = userData.withdrawable_balance + bp;
+        if(newWithdrawableBalance > 0) {
+            if (mode < 0) {
+                User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp }, $push: { balance_log: log } })
+                    .exec((err, u) => {
+                        if (err) console.log(err);
+                        cb();
+                    })
+            } else {
+                User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp, total_bp_win: bp }, $push: { balance_log: log } })
+                    .exec((err, u) => {
+                        if (err) console.log(err);
+                        cb();
+                    })
+            }
+        } else {
+                User.findByIdAndUpdate(user_id, { $inc: { balance: bp }, $push: { balance_log: log } })
+                    .exec((err, u) => {
+                        if (err) console.log(err);
+                        cb();
+                    })
+        }
+    });
+    
+};
+//calculate leader points
+exports.calculateLeaderPoints = (user_id, leaderPoints, cb) => {
+    User.findByIdAndUpdate(user_id, {$inc: {leader_point : leaderPoints, total_win: 1}})
+    .exec((err, user) => {
+        if(err) console.log(err);
+        cb();
+    });
 };
 
 
 //disission
-exports.matchDission = (matchId, winner, type, cb) => {
+exports.matchDission = (matchId, winner, cb) => {
+    if(winner == 'challenger') {
+        Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
+            .exec((err, m) => {
+                if(err) console.log(err);
+                let data = {
+                    winner : m.challenger,
+                    match : m,
+                    bp :m.balance
+                };
+                console.log(data);
+                cb(data);    
+            });
 
+    }else if (winner == 'challenged'){
+        Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
+            .exec((err, m) => {
+                if(err) console.log(err);
+                let data = {
+                    winner : m.challenger,
+                    match : m,
+                    bp :m.balance
+                };
+                console.log(data);
+                cb(data); 
+            });
+    }
 
 };
 //tournament helper function

@@ -14,6 +14,7 @@ let userSchema = new schema({
     balance: { type: Number, default: 100 },
     withdrawable_bp : {type: Number, default : 0},
     balance_log : [{
+        text : {type:String, default : ''},
         date: {type: Date, default: Date.now},
         mode : { type: Number, required: true},
         bp : {type : Number, required: true},

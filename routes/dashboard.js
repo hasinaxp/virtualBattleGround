@@ -10,6 +10,7 @@ const User = require('../models/user');
 const Game = require('../models/game');
 const Match = require('../models/match');
 const Chat = require('../models/chat');
+const FUNC = require('../controls/functions');
 
 
 //dashboard home route
@@ -123,7 +124,7 @@ router.post('/game/add', (req, res) => {
             }
         }
     }, (err, raw) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
         res.redirect('/dashboard');
     });
 });
@@ -137,10 +138,10 @@ router.get('/game/remove/:id', (req, res) => {
             games: { _id: reqUrl }
         }
     })
-    .exec( (err, dat) => {
-        if(err) console.log(err);
-        res.redirect('/dashboard');
-    });
+        .exec((err, dat) => {
+            if (err) console.log(err);
+            res.redirect('/dashboard');
+        });
 });
 
 //dashboard game challange route
@@ -184,7 +185,7 @@ router.get('/challenge/accept/:id', (req, res) => {
     Match.findById(req.params.id)
         .populate('challenged challenger')
         .exec((err, mx) => {
-            if(err) console.log(err);
+            if (err) console.log(err);
             if ((mx.balance < mx.challenged.balance) && (mx.balance < mx.challenger.balance)) {
                 let chat = new Chat();
                 chat.save((err, chatInst) => {
@@ -199,20 +200,18 @@ router.get('/challenge/accept/:id', (req, res) => {
                                 if (!fs.existsSync(newPath)) {
                                     fs.mkdirSync(newPath);
                                 }
-                                User.update({ email: mat.challenger.email }, { $inc: { balance: (-(mat.balance)), withdrawable_bp: (-(mat.balance)) } }, (err, d1) => {
-                                    console.log(d1);
-                                    User.update({ email: mat.challenged.email }, { $inc: { balance: (-(mat.balance)), withdrawable_bp: (-(mat.balance)) } }, (err, d2) => {
-                                        console.log(d2);
+                                FUNC.calculateBalance(mat.challenged._id, mat.balance, -1, "match initiated", () => {
+                                    FUNC.calculateBalance(mat.challenger._id, mat.balance, -1, "match initiated", () => {
+                                        res.redirect('/dashboard');
                                     });
                                 });
-                                res.redirect('/dashboard');
                             }
                         });
                 });
-            }else if((mx.balance < mx.challenged.balance) && (mx.balance > mx.challenger.balance)) {
+            } else if ((mx.balance < mx.challenged.balance) && (mx.balance > mx.challenger.balance)) {
                 res.redirect('/dashboard/balanceError2');
             }
-             else {
+            else {
                 res.redirect('/dashboard/balanceError');
             }
         });
