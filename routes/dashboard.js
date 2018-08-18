@@ -43,10 +43,10 @@ router.get('/', (req, res) => {
                 if (err) console.log(err);
                 let challengeData = [];
                 let challengeOngoing = [];
-
                 matches.forEach(m => {
                     let clng = {};
                     clng._id = m._id;
+                    console.log(m);
                     clng.gameName = m.game.name;
                     clng.challenger = {
                         _id: m.challenger._id,
@@ -147,25 +147,13 @@ router.get('/game/remove/:id', (req, res) => {
 //dashboard game challange route
 router.post('/game/challange', (req, res) => {
     if (req.body.balance <= req.data._user.balance) {
-        let match = new Match();
-        match.challenger = mongoose.Types.ObjectId(req.body.challenger);
-        match.challenged = mongoose.Types.ObjectId(req.body.challanged);
-        match.balance = req.body.balance;
-        match.game = mongoose.Types.ObjectId(req.body.game_id);
-        match.save(err => {
-            if (err) console.log(err);
-            else {
-                console.log('match registered successfully!');
-                res.redirect('/dashboard');
-            }
+        FUNC.createMatch(req.body.challenger, req.body.challenged, req.body.balance,req.body.game_id,'normal','not necessary', (match) => {
+            res.redirect('/dashboard');
         });
     }
     else {
         res.redirect('/dashboard/balanceError');
     }
-
-
-
 });
 
 //dashboard challenge remove route
@@ -180,7 +168,6 @@ router.get('/challenge/decline/:id', (req, res) => {
 });
 
 //dashboard challenge accept route
-
 router.get('/challenge/accept/:id', (req, res) => {
     Match.findById(req.params.id)
         .populate('challenged challenger')
@@ -215,7 +202,6 @@ router.get('/challenge/accept/:id', (req, res) => {
                 res.redirect('/dashboard/balanceError');
             }
         });
-
 
 });
 

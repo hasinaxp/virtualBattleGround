@@ -250,5 +250,34 @@ router.get('/feed/delete/:id', (req, res) => {
     });
 })
 
+//tournament ------------------
+router.post('/tournament/create', (req, res) => {
+    console.log(req.body);
+    let tournament = new Tournament();
+    tournament.balance = req.body.balance;
+    tournament.player_count = req.body.player_count;
+    tournament.game = req.body.game_id;
+    //calculating maximum number of stages
+    let i = 0, cap = req.body.player_count;
+    let match_array = [];
+    while (cap > 1) {
+        i++;
+        cap /= 2;
+        match_array.push(cap);
+    }
+    tournament.matches_per_round = match_array;
+    tournament.max_stage = i;
+    tournament.join_counter = 1;
+    tournament.save((err, s) => {
+        if (err) console.log(err);
+        else {
+            console.log(s);
+            res.json({
+                status: `done`
+            });
+        }
+    })
+});
+
 
 module.exports = router;

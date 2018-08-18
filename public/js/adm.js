@@ -75,7 +75,8 @@ $(document).ready(function () {
             player_count: playerCount,
             balance: balance
         };
-        postData('tournament/create',dataStruct, (data) => {
+        console.log(dataStruct);
+        postData('/admin/tournament/create',dataStruct, (data) => {
             if (data.error) {
                 console.log(err);
             }
@@ -154,7 +155,7 @@ $(document).ready(function () {
 
 });
 function deleteFeed(id) {
-    getData('admin/feed/delete/'+ id, (data) => {
+    getData('/admin/feed/delete/'+ id, (data) => {
         loadFeeds();
     });
 }

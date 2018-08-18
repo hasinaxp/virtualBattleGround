@@ -16,9 +16,8 @@ block content
         .row.box-x
             .card.z-depth-2.c1.base
                 .card-content
-                    span.card-title
-                     | Transaction Information - 
-                     .sp2 &nbsp #{userName}
+                    span.card-title Wallet Balance
+                    .hg
                     .row
                         .col.s6
                             span.sp2 BP :
@@ -30,15 +29,28 @@ block content
                         .col.s6
                             span #{withdrawable_bp} BP
                     .hg
+                    span.card-title Transaction Log - &nbsp #{userName}
                     .row
                         table
                             thead
                                 tr
-                                    th.sp4 BP AMMOUNT
-                                    th.sp4 DATE
-                                    th.sp4 STATUS 
+                                    th.sp4.center BP AMMOUNT
+                                    th.sp4.center DATE
+                                    th.sp4.center STATUS 
                                     //-draw / withdraw
                             tbody
+                                each trans in transactionLog
+                                    case trans.mode
+                                        when 1
+                                            tr
+                                                td.center #{trans.bp}
+                                                td.center #{trans.date}
+                                                td.center #{trans.text}
+                                        when -1
+                                            tr.red-text.text-lighten-2
+                                                td.center #{trans.bp}
+                                                td.center #{trans.date}
+                                                td.center #{trans.text}
         .row.box-x
                 .card.z-depth-2.c1.base
                     .card-content

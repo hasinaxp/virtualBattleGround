@@ -2,8 +2,10 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const Match = require('../models/match');
 const async = require('async');
+const _ = require('underscore');
 const Tournament = require('../models/tournament');
-const match = require('../models/match');
+const Chat = require('../models/chat');
+const fs = require('fs');
 
 
 function calcLev(leaderPoint) {
@@ -223,8 +225,61 @@ exports.makeString = (type) => {
         return `error! undefined type : ${type}`
     }
 }
+//function to generate match
+//match path is required for generating tournament match, otherwise pass any value.
+function genMatch(challenger, challenged, balance, game, type, matchDirPath, cb) {
+    let player1 = mongoose.Types.ObjectId(challenger);
+    let player2 = mongoose.Types.ObjectId(challenged);
+    let match = new Match();
+    match.challenger = player1;
+    match.challenged = player2;
+    match.game = mongoose.Types.ObjectId(game);
+    if (type == 'tournament') {
+        match.balance = 0;
+        match.is_tournament = true;
+        match.save((err, m) => {
+            if (err) console.log(err);
+            else {
+                let chat = new Chat();
+                chat.save((err, chatInst) => {
+                    if (err) console.log(err);
+                    Match.findByIdAndUpdate(m._id, { $set: { state: 1, chatroom: chatInst._id } })
+                        .populate('challenged challenger')
+                        .exec((err, mat) => {
+                            if (err) console.log(err);
+                            else {
+                                console.log(mat);
+                                let newPath = `${matchDirPath}/${m._id}`;
+                                console.log(newPath);
+                                if (!fs.existsSync(newPath)) {
+                                    fs.mkdirSync(newPath);
+                                }
+                                console.log('match registered successfully!');
+                                cb(m);
+                            }
+                        });
+                });
+
+            }
+        });
+    }
+    else {
+        match.balance = balance;
+        match.is_tournament = false;
+        match.save((err, m) => {
+            if (err) console.log(err);
+            else {
+                console.log('match registered successfully!');
+                cb(m);
+            }
+        });
+    }
+}
+exports.createMatch = genMatch;
+
+
 //calculating bp
-exports.calculateBalance = (user_id, bp, mode,text, cb) => {
+exports.calculateBalance = (user_id, bp, mode, text, cb) => {
     let log = {};
     log.date = Date.now();
     log.bp = bp;
@@ -232,69 +287,69 @@ exports.calculateBalance = (user_id, bp, mode,text, cb) => {
     log.text = text;
     bp = mode * bp;
     User.findById(user_id)
-    .exec((err, userData) => {
-        if(err) console.log(err);
-        let newWithdrawableBalance = userData.withdrawable_balance + bp;
-        if(newWithdrawableBalance > 0) {
-            if (mode < 0) {
-                User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp }, $push: { balance_log: log } })
-                    .exec((err, u) => {
-                        if (err) console.log(err);
-                        cb();
-                    })
+        .exec((err, userData) => {
+            if (err) console.log(err);
+            let newWithdrawableBalance = userData.withdrawable_balance + bp;
+            if (newWithdrawableBalance > 0) {
+                if (mode < 0) {
+                    User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp }, $push: { balance_log: log } })
+                        .exec((err, u) => {
+                            if (err) console.log(err);
+                            cb();
+                        })
+                } else {
+                    User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp, total_bp_win: bp }, $push: { balance_log: log } })
+                        .exec((err, u) => {
+                            if (err) console.log(err);
+                            cb();
+                        })
+                }
             } else {
-                User.findByIdAndUpdate(user_id, { $inc: { balance: bp, withdrawable_balance: bp, total_bp_win: bp }, $push: { balance_log: log } })
-                    .exec((err, u) => {
-                        if (err) console.log(err);
-                        cb();
-                    })
-            }
-        } else {
                 User.findByIdAndUpdate(user_id, { $inc: { balance: bp }, $push: { balance_log: log } })
                     .exec((err, u) => {
                         if (err) console.log(err);
                         cb();
                     })
-        }
-    });
-    
+            }
+        });
+
 };
 //calculate leader points
 exports.calculateLeaderPoints = (user_id, leaderPoints, cb) => {
-    User.findByIdAndUpdate(user_id, {$inc: {leader_point : leaderPoints, total_win: 1}})
-    .exec((err, user) => {
-        if(err) console.log(err);
-        cb();
-    });
+    User.findByIdAndUpdate(user_id, { $inc: { leader_point: leaderPoints, total_win: 1 } })
+        .exec((err, user) => {
+            if (err) console.log(err);
+            cb();
+        });
 };
 
 
 //disission
 exports.matchDission = (matchId, winner, cb) => {
-    if(winner == 'challenger') {
-        Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
+    if (winner == 'challenger') {
+        Match.findByIdAndUpdate(matchId, { $set: { state: 2 } })
             .exec((err, m) => {
-                if(err) console.log(err);
+                if (err) console.log(err);
                 let data = {
-                    winner : m.challenger,
-                    match : m,
-                    bp :m.balance
+                    winner: m.challenger,
+                    match: m,
+                    bp: m.balance
                 };
                 console.log(data);
-                cb(data);    
+                cb(data);
             });
 
-    }else if (winner == 'challenged'){
-        Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
+    } else if (winner == 'challenged') {
+        Match.findByIdAndUpdate(matchId, { $set: { state: 3 } })
             .exec((err, m) => {
-                if(err) console.log(err);
+                if (err) console.log(err);
                 let data = {
-                    winner : m.challenger,
-                    match : m,
-                    bp :m.balance
+                    winner: m.challenger,
+                    match: m,
+                    bp: m.balance
                 };
                 console.log(data);
-                cb(data); 
+                cb(data);
             });
     }
 
@@ -310,13 +365,39 @@ exports.getTournamentStatus = (tournamentId, cb) => {
         })
 }
 
-exports.initTournament = (tournamentId, cb) => {
+exports.getTournamentsUser = (user_id, games, cb) => {
+    let newTournaments = [];
+    let perticipationTournaments = [];
+    Tournament.find({ game: { $in: games } })
+        .populate('game')
+        .exec((err, tournaments) => {
+            if (err) console.log(err);
+            tournaments.forEach(tour => {
+                console.log(tour.players);
+                console.log(user_id.toString());
+                let players = tour.players.map(p => p.toString());
+                if (_.contains(players, user_id.toString()))
+                    perticipationTournaments.push(tour);
+                else
+                    newTournaments.push(tour);
+            });
+            let data = {
+                participating: perticipationTournaments,
+                not_participating: newTournaments
+            }
+            console.log(data);
+            cb(data);
+        });
+};
+
+
+exports.initTournament = (tournamentId, matchDirPath, cb) => {
     Tournament.findById(tournamentId)
         .exec((err, tournament) => {
             if (err) console.log(err);
             //creating player pairs
             let pairs = [];
-            for (let i = 0; i < tournament.join_counter; i += 2) {
+            for (let i = 0; i < tournament.join_counter - 1; i += 2) {
                 let pair = {};
                 pair.first = tournament.players[i];
                 pair.second = tournament.players[i + 1];
@@ -324,22 +405,18 @@ exports.initTournament = (tournamentId, cb) => {
             }
             let matchIds = [];
             async.each(pairs, (pair, callback) => {
-                let match = new Match();
-                match.challenger = mongoose.Types.ObjectId(pair.first);
-                match.challenged = mongoose.Types.ObjectId(pair.second);
-                match.balance = req.body.balance;
-                match.game = mongoose.Types.ObjectId(req.body.game_id);
-                match.is_tournament = true;
-                match.save((err, m) => {
-                    if (err) console.log(err);
-                    matchIds.push(Mongoose.Types.ObjectId(m._id));
+                genMatch(pair.first,pair.second, tournament.balance,tournament.game,'tournament',matchDirPath,(m) => {
+                    matchIds.push(mongoose.Types.ObjectId(m._id));
                     callback();
                 });
             }, (err) => {
                 if (err)
                     console.log(err);
                 else {
-                    Tournament.findByIdAndUpdate(tournamentId, { $set: { matchs: matchIds, stage: 1, compilation: 0 } })
+                    console.log('tournament initiated');
+                    console.log('pairs');
+                    console.log(matchIds);
+                    Tournament.findByIdAndUpdate(tournamentId, { $set: { matches: matchIds, stage: 1, compilation: 0 } })
                         .exec((err, t) => {
                             if (err) console.log(err);
                             cb(t);
@@ -356,10 +433,10 @@ exports.advanceStage = (tournamentId, cb) => {
 //get user info
 exports.userInfoGetter = (user_id, cb) => {
     User.findById(user_id)
-    .exec((err, user) => {
-        if(err) console.log(err);
-        cb(user);
-    })
+        .exec((err, user) => {
+            if (err) console.log(err);
+            cb(user);
+        })
 }
 
 
