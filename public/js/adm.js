@@ -33,8 +33,9 @@ $(document).ready(function () {
                 });
                 $('#GameAddForm').reset();
                 $('#modalAddGame').modal('close');
+                $(location).attr('href', '/admin')
             });
-        $(location).attr('href', '/admin')
+       
         e.preventDefault();
     });
 
@@ -60,8 +61,9 @@ $(document).ready(function () {
                 });
                 $('#removeGameForm').reset();
                 $('#modalRemoveGame').modal('close');
+                $(location).attr('href', '/admin')
             });
-        $(location).attr('href', '/admin')
+        
         e.preventDefault();
     });
 
@@ -70,10 +72,13 @@ $(document).ready(function () {
         let gameId = $('#a_t_game').val();
         let playerCount = $('#a_t_player_count').val();
         let balance = $('#a_t_balance').val();
+        let rule = $('#a_t_rule').val();
+        rule = rule.replace(/\r?\n/g, '<br />');
         let dataStruct = {
             game_id: gameId,
             player_count: playerCount,
-            balance: balance
+            balance: balance,
+            rules : rule
         };
         console.log(dataStruct);
         postData('/admin/tournament/create',dataStruct, (data) => {
@@ -117,9 +122,10 @@ $(document).ready(function () {
                         $('#d-proofs-1').hide();
                     if (img2 == 'no')
                         $('#d-proofs-2').hide();
+                    $('#modalDecision').modal('open');
                 });
             });
-        $('#modalDecision').modal('open');
+        
     })
 
     //-discicion on match winning
@@ -132,9 +138,9 @@ $(document).ready(function () {
             let successReport = `challenger victory successful`;
             console.log(data);
             alert(successReport);
+            $('.modal').modal('close');
+            $(location).attr('href', '/admin');
         });
-        $('.modal').modal('close');
-        $(location).attr('href', '/admin');
     });
 
     $('#d-win2').on('click', function () {
@@ -146,14 +152,16 @@ $(document).ready(function () {
             let successReport = `challenger victory successful`;
             console.log(data);
             alert(successReport);
+            $('.modal').modal('close');
+            $(location).attr('href', '/admin');
         });
-        $('.modal').modal('close');
-        $(location).attr('href', '/admin');
-    });
+             
 
+    });
     loadFeeds();
 
 });
+//loadFeeds();
 function deleteFeed(id) {
     getData('/admin/feed/delete/'+ id, (data) => {
         loadFeeds();

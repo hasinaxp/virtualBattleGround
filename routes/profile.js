@@ -2,11 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
+const jimp = require('jimp');
 const authenticate = require('../controls/authenticate');
 const router = express.Router();
 router.use(authenticate.kick);
 
 const User = require('../models/user');
+const FUNC = require('../controls/functions');
 
 //--------multer storage defination----------------------------------
 const imageStorage = multer.diskStorage({
@@ -39,6 +41,22 @@ router.get('/', (req, res) => {
         user: req.data._user
     });
 });
+router.get('/:id', (req, res) => {
+    let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
+    FUNC.existsUser(req.params.id, res, () => {
+        FUNC.userInfoGetter(req.params.id, (user) => {
+            res.render('profileOther', {
+                pageTitle: 'profile',
+                proImg: profileImgPath,
+                userName: req.data._user.full_name,
+                balence: req.data._user.balance,
+                user: user,
+                userImage: `/user/${user.folder}/${user.image}`
+            });
+        });
+    });
+});
+
 
 //------------------------------------error routes----------------------------------
 
@@ -50,10 +68,16 @@ router.post('/update/image/:id', imageUpload, (req, res) => {
     console.log(img);
     User.findByIdAndUpdate(req.params.id, { $set: { image: img } }, (err, dat) => {
         if (err) console.log(err);
-        else {
-            console.log('profile image changed successfully!')
-            res.redirect('/profile');
-        }
+        let image = `${req.app.locals.dat.basePath}/public/user/${req.data._user.folder}/${img}`
+        jimp.read(image, function (err, lenna) {
+            if (err) throw err;
+            lenna
+                .resize(400, jimp.AUTO)
+                .quality(80)                 // set JPEG quality
+                .write(image); // save
+        });
+        console.log('profile image changed successfully!')
+        res.redirect('/profile');
     });
 });
 //change name

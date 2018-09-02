@@ -21,21 +21,20 @@ const prepareStorage = (req, res, next) =>{
     req.imageStringArray = [];
     return next();
 }
-const feedImageStorage = multer.diskStorage({
+const feedStorage = multer.diskStorage({
     destination: './public/feedimage/',
     filename: (req, file, cb) => {
-        let nameFile = FUNC.makeString('media') + path.extname(file.originalname);
-        //pushing the path to the iamge array
-        req.imageStringArray.push(nameFile);
-        console.log(nameFile);
-        cb(null, nameFile);
+        let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
+        req.data = data;
+        cb(null, data.name + data.exten);
     }
 });
-
 const gameimageUpload = multer({
     storage: gameStorage
 }).single('image');
-
+const feedImageUpload = multer({
+    storage: feedStorage
+}).single('image');
 const nupload = multer();
 
 //Models
@@ -139,35 +138,53 @@ router.post('/makeVictor', (req, res) => {
     let victor = req.body.vic;
     console.log(req.body);
     FUNC.isTournament(matchId, () => {
+        if (victor == 'p1') {//if challenger wins
+            FUNC.matchDission(req.body.m_id, 'challenger', (info) => {
+                FUNC.getTournamentStatus(info.match.tournament, (tournament) => {
+                    let lp = tournament.balance * 10 + 1;
+                    FUNC.calculateLeaderPoints(info.winner, lp, () => {
+                        FUNC.advanceStage(tournament._id, `${req.app.locals.dat.basePath}/public/matchImages`, () => {
+                            res.redirect('/dashboard');
+                        })
+                    });
+                });
+            });
+        }
+        else {//if challenged wins
+            FUNC.matchDission(req.body.m_id, 'challenged', (info) => {
+                FUNC.getTournamentStatus(info.match.tournament, (tournament) => {
+                    let lp = tournament.balance * 10 + 1;
+                    FUNC.calculateLeaderPoints(info.winner, lp, () => {
+                        FUNC.advanceStage(tournament._id, `${req.app.locals.dat.basePath}/public/matchImages`, () => {
+                            res.redirect('/dashboard');
+                        })
+                    });
+                });
+            });
+        }
 
     },() => {
         if(victor == 'p1') {
-            Match.findByIdAndUpdate(matchId, {$set: {state: 2}})
-            .exec((err, m) => {
-                if(err) console.log(err);
-                let gain = FUNC.calculateReward(m.balance);
-                User.findByIdAndUpdate(m.challenger, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-                .exec((err, s)=> {
-                    if(err) console.log(err);
-                    res.json({
-                        data : s,
-                        status : 'success'
-                    })
-                });              
+            FUNC.matchDission(req.body.m_id, 'challenger', (info) => {
+                let reward = FUNC.calculateReward(info.bp);
+                FUNC.calculateBalance(info.winner, reward.m_bp, 1, "Won in Match", () => {
+                    FUNC.calculateLeaderPoints(info.winner, reward.m_lp, () => {
+                        res.json({
+                            status: 'challenger won'
+                        });
+                    });
+                });
             });
         }
-        else {
-            Match.findByIdAndUpdate(matchId, {$set: {state: 3}})
-            .exec((err, m) => {
-                if(err) console.log(err);
-                let gain = FUNC.calculateReward(m.balance);
-                User.findByIdAndUpdate(m.challenged, {$inc: {balance : gain.m_bp, withdrawable_bp: gain.m_bp, total_bp_win : gain.m_bp, leader_point : gain.m_lp, total_win: 1}})
-                .exec((err, s)=> {
-                    if(err) console.log(err);
-                    res.json({
-                        data : s,
-                        status : 'success'
-                    })
+        else {//if challenged wins
+            FUNC.matchDission(req.body.m_id, 'challenged', (info) => {
+                let reward = FUNC.calculateReward(info.bp);
+                FUNC.calculateBalance(info.winner, reward.m_bp, 1, "Won in Match", () => {
+                    FUNC.calculateLeaderPoints(info.winner, reward.m_lp, () => {
+                        res.json({
+                            status: 'challenged won'
+                        });
+                    });
                 });
             });
         }
@@ -215,13 +232,13 @@ router.post('/game/remove', nupload.fields([]), (req, res) => {
 });
 
 //feed add route
-router.post('/feed/add', prepareStorage, multer({storage: feedImageStorage}).array('image', 10),(req, res) => {
+router.post('/feed/add', feedImageUpload,(req, res) => {
     console.log(req.body);
     console.log(req.imageStringArray);
     let feed = new Feed();
     feed.title = req.body.title;
-    feed.content = req.body.content;
-    feed.images = req.imageStringArray;
+    feed.content = req.body.content.replace(/\r?\n/g, '<br />');
+    feed.image = req.data.name + req.data.exten;
     feed.date  = Date.now();
     feed.save((err, f)=> {
         if(err) console.log(err);
@@ -257,6 +274,7 @@ router.post('/tournament/create', (req, res) => {
     tournament.balance = req.body.balance;
     tournament.player_count = req.body.player_count;
     tournament.game = req.body.game_id;
+    tournament.rules = req.body.rules;
     //calculating maximum number of stages
     let i = 0, cap = req.body.player_count;
     let match_array = [];

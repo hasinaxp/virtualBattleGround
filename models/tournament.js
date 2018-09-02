@@ -6,13 +6,17 @@ let tournamentSchema = new schema({
     balance: {type : Number, default: 0},
     game: {type: schema.Types.ObjectId, ref: 'game'},
     players : [{type: schema.Types.ObjectId, ref: 'user'}],
+    rules : {type : String, required: true},
+    banner_img : {type: String},
+    has_banner : {type: Boolean, default: false},
     compilation : {type: Number, default: 0},
     join_counter : {type: Number, default: 1},
     player_count : {type: Number, required: true},
     stage : {type: Number, default : 0},
     matches: [{type: schema.Types.ObjectId, ref: 'match'}],
     date : {type: Date, default: Date.now},
-    matches_per_round : [{type: Number, default: 1}]
+    matches_per_round : [{type: Number, default: 1}],
+    has_ended : {type: Boolean, default: false}
 });
 
 let Tournament = module.exports = mongoose.model('tournament', tournamentSchema);
@@ -21,5 +25,5 @@ stage->
     1 - first stage
     2 - second stage
     3 - 3rd stage
-    4 - final
+    4 - final etc
 */

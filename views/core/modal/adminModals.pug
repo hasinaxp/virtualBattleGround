@@ -101,6 +101,9 @@
                     each game in games
                         option(value=game._id) #{game.name}
             .row.input-field.ifld
+                textarea#a_t_rule.materialize-textarea
+                label(for='a_t_rule') Rules
+            .row.input-field.ifld
                 select(name="player_count", id="a_t_player_count")
                     option(value='', disabled='', selected='') Select player Count
                     option(value='4') 4

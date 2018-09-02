@@ -27,5 +27,5 @@
                     when 2
                         | team
             br
-            a(href=deleteLink, data-position="bottom" data-delay="50" data-tooltip="remove game").btn.tooltipped.waves-effect.waves-light.red.modal-trigger.right.small-1
+            a(href='#modalDeleteGame', onclick="setDeleteUrl('" +deleteLink+"');" data-position="bottom" data-delay="50" data-tooltip="remove game").btn.tooltipped.waves-effect.waves-light.red.modal-trigger.right.small-1#deleteGame
                 i.material-icons.small remove

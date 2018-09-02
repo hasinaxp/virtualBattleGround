@@ -31,7 +31,7 @@ block content
                     .hg
                     span.card-title Transaction Log - &nbsp #{userName}
                     .row
-                        table
+                        table#paging
                             thead
                                 tr
                                     th.sp4.center BP AMMOUNT
@@ -75,5 +75,6 @@ block foot
 
 
 block scripts
+    script(src="js/paging.js")
     script(src="js/main.js")
-    script(src="js/pro.js")
+    script(src="js/wallet.js")

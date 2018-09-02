@@ -13,6 +13,7 @@ let matchSchema = new schema({
     challenger_evidance_state : {type: Boolean, default: false},
     challenged_evidance_state : {type: Boolean, default: false},
     is_tournament : {type: Boolean, default: false},
+    tournament : {type: schema.Types.ObjectId, ref: 'tournament'},
     chatroom : { type : schema.Types.ObjectId, ref: 'chat'}
 });
 

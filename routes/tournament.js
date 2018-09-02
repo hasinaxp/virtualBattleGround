@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
     let myGames = [];
     req.data._user.games.forEach(g => myGames.push(mongoose.Types.ObjectId(g._id)));
         FUNC.getTournamentsUser(req.data._user._id, myGames, (data) => {
-            console.log(data);
+            //console.log(data);
             res.render('tournament', {
                 pageTitle: 'tournament',
                 proImg: profileImgPath,
@@ -46,7 +46,7 @@ router.get('/join/:tournament_id', (req, res) => {
                         })
                     } else {
                         FUNC.initTournament(req.params.tournament_id,`${req.app.locals.dat.basePath}/public/matchImages`, (tournament) => {
-                            console.log(tournament);
+                            //console.log(tournament);
                             res.json({
                                 status : 1
                             })
@@ -68,25 +68,35 @@ router.get('/:id', (req, res) => {
         .populate('game')
         .exec((err, tournament) => {
             if (err) console.log(err);
-            let prize = Math.floor((tournament.balance * tournament.player_count) * 9 / 10);
-            let prize1 = Math.floor(prize * 0.6);
-            let prize2 = Math.floor(prize * 0.4);
-
-            res.render('tournamentDetail', {
-                gameName: tournament.game.name,
-                tournamentId: tournament._id,
-                capacity: tournament.player_count,
-                prize1: prize1,
-                prize2: prize2,
-                bet: tournament.balance,
-                time: tournament.date,
-                stage: tournament.stage,
-                pageTitle: 'tournament | detail',
-                isPlaying: false
+            FUNC.isInTournament(req.params.id, req.data._user._id, (isInTournament) => {
+                let prize = Math.floor((tournament.balance * tournament.player_count) * 9 / 10);
+                let prize1 = Math.floor(prize * 0.6);
+                let prize2 = Math.floor(prize * 0.4);
+                res.render('tournamentDetail', {
+                    gameName: tournament.game.name,
+                    tournamentId: tournament._id,
+                    capacity: tournament.player_count,
+                    prize1: prize1,
+                    prize2: prize2,
+                    bet: tournament.balance,
+                    time: tournament.date,
+                    stage: tournament.stage,
+                    pageTitle: 'tournament | detail',
+                    isPlaying: isInTournament,
+                });
             })
-
         });
+});
 
+router.get('/bracket/:id', (req, res) => {
+    console.log(req.params.id);
+    FUNC.getTournamentTree(req.params.id, (data) => {
+        console.log(data);
+        res.json({
+            data: data,
+            status : 1
+        });
+    })
 });
 
 

@@ -14,4 +14,8 @@
                         p.left.red-text#login-msg.small
                     br
                     .row.center
-                        button(type="submit" ).btn.waves-effect.waves-light.center#loginBtn.modal-trigger Log In
+                        .col
+                            button(type="submit" ).btn.waves-effect.waves-light.center.gap-1#loginBtn.modal-trigger Log In
+                        .col
+                            .g-signin2.center(data-onsuccess='onSignIn')
+                        

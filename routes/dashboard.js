@@ -8,6 +8,7 @@ router.use(authenticate.kick);
 
 const User = require('../models/user');
 const Game = require('../models/game');
+const Feed = require('../models/feed');
 const Match = require('../models/match');
 const Chat = require('../models/chat');
 const FUNC = require('../controls/functions');
@@ -46,17 +47,23 @@ router.get('/', (req, res) => {
                 matches.forEach(m => {
                     let clng = {};
                     clng._id = m._id;
-                    console.log(m);
                     clng.gameName = m.game.name;
-                    clng.challenger = {
+                    clng.challenger = m.challenger ? {
                         _id: m.challenger._id,
                         full_name: m.challenger.full_name,
                         image: `../user/${m.challenger.folder}/${m.challenger.image}`,
-                    }
-                    clng.challenged = {
+                    } : {
+                            full_name: 'undefined',
+                            image: 'undefined',
+                        };
+                    clng.challenged = m.challenged ? {
                         full_name: m.challenged.full_name,
                         image: `../user/${m.challenged.folder}/${m.challenged.image}`,
-                    }
+                    } : {
+                            full_name: 'undefined',
+                            image: 'undefined',
+                        };
+
                     clng.date = m.date;
                     clng.balance = m.balance;
                     if (m.state == 0)
@@ -65,19 +72,23 @@ router.get('/', (req, res) => {
                         challengeOngoing.push(clng);
                 });
                 //console.log(challengeData);
+                Feed.find({})
+                    .exec((err, feeds) => {
+                        if (err) console.log(err);
+                        let profileImgPath = `../user/${req.data._user.folder}/${req.data._user.image}`;
+                        res.render('dashboard', {
+                            pageTitle: 'Dashboard',
+                            userName: req.data._user.full_name,
+                            balence: req.data._user.balance,
+                            proImg: profileImgPath,
+                            availableGames: gameList,
+                            gamePocket: gamePocket,
+                            challenges: challengeData,
+                            matches: challengeOngoing,
+                            feeds: feeds
+                        });
+                    });
 
-                let profileImgPath = `../user/${req.data._user.folder}/${req.data._user.image}`;
-                res.render('dashboard', {
-                    pageTitle: 'Dashboard',
-                    userName: req.data._user.full_name,
-                    balence: req.data._user.balance,
-                    proImg: profileImgPath,
-                    availableGames: gameList,
-                    gamePocket: gamePocket,
-                    challenges: challengeData,
-                    matches: challengeOngoing
-
-                });
             })//match finding ends here
 
     }); // game find function ends here....
@@ -110,9 +121,26 @@ router.get('/balanceError2', (req, res) => {
 
     });
 });
+router.get('/ErrorUser', (req, res) => {
+    res.render('error', {
+        pageTitle: 'error',
+        errorMessage1: `User Doesnot Exists`,
+        errorMessage2: `This userId is invalid. Please try again.`
+
+    });
+});
 
 //-----------------------------games routes----------------------------------
-
+router.get('/feed/:id', (req, res) => {
+    Feed.findById(req.params.id)
+    .exec((err, feed)=> {
+        if(err) console.log(err);
+        res.json({
+            feed : feed,
+            status: 1
+        })
+    })
+});
 
 //dashboard game add route
 router.post('/game/add', (req, res) => {
@@ -140,14 +168,16 @@ router.get('/game/remove/:id', (req, res) => {
     })
         .exec((err, dat) => {
             if (err) console.log(err);
-            res.redirect('/dashboard');
+            res.json({
+                status: 'ok',
+            })
         });
 });
 
 //dashboard game challange route
 router.post('/game/challange', (req, res) => {
     if (req.body.balance <= req.data._user.balance) {
-        FUNC.createMatch(req.body.challenger, req.body.challenged, req.body.balance,req.body.game_id,'normal','not necessary', (match) => {
+        FUNC.createMatch(req.body.challenger, req.body.challenged, req.body.balance, req.body.game_id, 'normal', 'not necessary', 123456, (match) => {
             res.redirect('/dashboard');
         });
     }
@@ -181,9 +211,9 @@ router.get('/challenge/accept/:id', (req, res) => {
                         .exec((err, mat) => {
                             if (err) console.log(err);
                             else {
-                                console.log(mat);
+                                //console.log(mat);
                                 let newPath = req.app.locals.dat.basePath + '/public/matchImages/' + req.params.id;
-                                console.log(newPath);
+                                //console.log(newPath);
                                 if (!fs.existsSync(newPath)) {
                                     fs.mkdirSync(newPath);
                                 }

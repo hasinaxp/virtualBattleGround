@@ -63,7 +63,9 @@ block content
 
         else
             .card-panel.c1.base
-                h3.center Status
+                .row#tournamentBrackets.blue-text.text-darken-4(style="overflow-x:scroll;")
+                    
+            
             
 block foot
     include ./core/footer.pug
@@ -72,6 +74,8 @@ block foot
 
 block scripts
     script(src='/socket.io/socket.io.js')
+    script(src="../js/brackets.min.js")
+    
     script(src="../js/main.js")
     script(src="../js/torn2.js")
 

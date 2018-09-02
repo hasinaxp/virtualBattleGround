@@ -29,7 +29,7 @@ block content
                     .galary.challenge-list
                         each cg in matches
                             include ./core/sticker/matchCard.pug
-            li
+            li.active
                 .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Game Library
                 .c3.collapsible-body
                     span Current Includes
@@ -42,6 +42,19 @@ block content
                         a#linkEditGames.btn-norm.waves-effect.tooltipped.waves-light.lighten-2.white-text.modal-trigger(href='#modalEditGameUser', data-position='bottom', data-delay='50', data-tooltip='add game')
                             i.fa.fa-trophy.light-green-text.text-accent-3
                             |                             add game
+            li.active
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Feeds
+                .c3.collapsible-body
+                    .galary
+                        each feed in feeds
+                            a(href="#modalFeed").modal-trigger
+                                .card.card3(onclick="showFeed('"+feed._id+"');")
+                                    .card-image
+                                        -var ix = 'feedimage/'+feed.image
+                                        img(src=ix)
+                                        .card-title.hx4 #{feed.title}
+                                        
+
     //-dashboard collapse end here
     .hg1
 

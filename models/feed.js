@@ -5,7 +5,7 @@ const schema = mongoose.Schema;
 let feeedschema = new schema({
     title : {type : String, required : true},
     content : {type : String, required : true},
-    images : [{type : String, required : true}],
+    image : {type : String, required : true},
     date : {type : Date, default : Date.now }
 });
 

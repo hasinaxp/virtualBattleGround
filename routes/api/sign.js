@@ -47,7 +47,7 @@ router.post('/register', (req, res) => {
                 user.image = 'default.jpg';
                 user.date = Date.now();
                 let newPath = req.app.locals.dat.basePath + '/public/user/' + fld;
-                console.log(newPath);
+                //console.log(newPath);
                 if (!fs.existsSync(newPath)) {
                     fs.mkdirSync(newPath);
                 }
@@ -81,7 +81,7 @@ router.post('/login', (req, res, next) => {
             bcrypt.compare(password, user.password, (err, result) => {
                 if (err) throw err;
                 if (result) {
-                    console.log('password matched!');
+                    //console.log('password matched!');
                     res.cookie('logautx', user.email);
                     res.cookie('logauti', user._id.toString());
                     res.cookie('logauty', user.connection_string);
@@ -102,6 +102,16 @@ router.post('/login', (req, res, next) => {
         }
     });
 });
+//google login
+
+router.post('/login/google', (req, res) => {
+    console.log(req.body);
+    res.json({
+        success: 1,
+        data : req.body
+    })
+});
+
 
 //logout
 router.get('/logout', (req, res) => {
@@ -111,7 +121,7 @@ router.get('/logout', (req, res) => {
             'connection_string': conStr
         }
     }, { new: true }, (err, data) => {
-        console.log('logout successfull');
+        //console.log('logout successfull');
         res.clearCookie('logautx');
         res.clearCookie('logauty');
         res.redirect('/');

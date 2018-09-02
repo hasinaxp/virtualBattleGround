@@ -191,28 +191,26 @@ $(document).ready(function () {
             }
             $('#modalChallangeAction').modal('open');
         })
-    })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    });
 
 });
+function showFeed(id) {
+    console.log(id);
+    getData('/dashboard/feed/'+id, (data)=> {
+        
+        $('#f_title').text(data.feed.title);
+        $('#f_image').html(`<img src="/feedimage/${data.feed.image}" class="responsive-img"></img>`)
+        $('#f_content').html(data.feed.content);
+    })
+}
+let deleteUrl = '';
+function setDeleteUrl(url) {
+    deleteUrl = url;
+}
+
+function deleteGame() {
+    getData(deleteUrl, () => {
+        $('.modal').modal('close');
+        $(location).attr('href', '/dashboard')
+    })
+}

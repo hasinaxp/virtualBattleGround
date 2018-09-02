@@ -18,7 +18,7 @@ block content
                      | Match Information - 
                      .sp2 &nbsp #{userName}
                     .row
-                    table
+                    table#paging
                         thead
                             tr
                                 th.sp4 OPPONENT
@@ -46,5 +46,6 @@ block foot
 
 
 block scripts
+    script(src="js/paging.js")
     script(src="js/main.js")
-    script(src="js/pro.js")
+    script(src="js/log.js")
