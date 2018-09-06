@@ -207,7 +207,6 @@ let deleteUrl = '';
 function setDeleteUrl(url) {
     deleteUrl = url;
 }
-
 function deleteGame() {
     getData(deleteUrl, () => {
         $('.modal').modal('close');

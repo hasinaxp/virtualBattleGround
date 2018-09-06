@@ -34,6 +34,7 @@ router.get('/', (req, res) => {
                 let rank = 1;
                 ur.forEach(u => {
                     let dat = {};
+                    dat._id = u._id;
                     dat.rank = rank;
                     dat.full_name = u.full_name;
                         dat.leader_point = u.leader_point;

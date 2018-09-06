@@ -49,8 +49,9 @@ block content
                     .row
                         ul.collection
                             each champion in champions
+                                -var dUrl = '/profile/' + champion._id; 
                                 li.collection-item.c2
-                                    a.bc(data-id='${i._id}', href='#')
+                                    a.bc(data-id='${i._id}', href=dUrl)
                                         img.img-pin(src= champion.img)
                                         span.fix-1.sp1 # #{champion.rank} - #{champion.full_name} &nbsp &nbsp (#{champion.leader_point} LP)
                                         

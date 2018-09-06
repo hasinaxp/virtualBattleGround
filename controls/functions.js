@@ -373,11 +373,13 @@ exports.getTournamentsUser = (user_id, games, cb) => {
             tournaments.forEach(tour => {
                 //console.log(tour.players);
                 //console.log(user_id.toString());
-                let players = tour.players.map(p => p.toString());
+                if(!tour.has_ended) {
+                    let players = tour.players.map(p => p.toString());
                 if (_.contains(players, user_id.toString()))
                     perticipationTournaments.push(tour);
                 else
                     newTournaments.push(tour);
+                }
             });
             let data = {
                 participating: perticipationTournaments,

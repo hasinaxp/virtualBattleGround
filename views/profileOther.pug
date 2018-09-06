@@ -1,7 +1,7 @@
 extends layout.pug
 block links
-    link(rel="stylesheet", href="css/main.css")
-    link(rel="stylesheet", href="css/pro.css")
+    link(rel="stylesheet", href="../css/main.css")
+    link(rel="stylesheet", href="../css/pro.css")
 
 
 
@@ -31,36 +31,9 @@ block content
                             span=user.full_name
                     .row
                         .col.s4
-                            span.sp4 Email :
-                        .col.s8
-                            span=user.email
-                    if user.phone
-                        .row
-                            .col.s4
-                                span  :
-                            .col.s8
-                                span=user.phone
-                    .row
-                        .col.s4
                             span.sp4 Balance :
                         .col.s8
                             span #{user.balance} BP
-    //-profile info board ends here
-    .hg
-    .container
-        .row.box-x
-            .card.z-depth-2.c1.base
-                .card-content
-                    span.card-title Change Profile information
-                    .row.hg
-                    .row
-                        ul.profile-options
-                            li
-                                a.btn-opt.modal-trigger(href="#modalChangeProfilePic") Change Profile Image
-                            li
-                                a.btn-opt.modal-trigger(href="#modalChangeProfileName") Change Full Name
-                            li
-                                a.btn-opt.modal-trigger(href="#modalChangeProfilePassword") Change password
 
 
     .hg1
@@ -72,5 +45,5 @@ block foot
 
 
 block scripts
-    script(src="js/main.js")
-    script(src="js/pro.js")
+    script(src="../js/main.js")
+    script(src="../js/pro.js")

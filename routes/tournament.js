@@ -83,6 +83,7 @@ router.get('/:id', (req, res) => {
                     stage: tournament.stage,
                     pageTitle: 'tournament | detail',
                     isPlaying: isInTournament,
+                    rules : tournament.rules
                 });
             })
         });

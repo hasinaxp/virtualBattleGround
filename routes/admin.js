@@ -75,10 +75,12 @@ router.get('/', (req, res) => {
                     let tournamentsOngoing =[],
                         tournamentsYetToStart =[];
                     tournaments.forEach( tour => {
-                        if(tour.stage == 0)
+                        if(!tour.has_ended) {
+                            if(tour.stage == 0)
                             tournamentsYetToStart.push(tour);
                         else
                             tournamentsOngoing.push(tour);
+                        }
                     });
                     res.render('admin', {
                         pageTitle: 'admin',

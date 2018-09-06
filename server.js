@@ -57,7 +57,12 @@ app.get('/', (req, res) => {
         pageTitle: 'home'
     });
 });
-
+app.get('/rule', (req, res) => {
+    res.render('rule', {
+        pageTitle: 'rules',
+        subject : 'RULES'
+    });
+});
 //dashboard route
 let dashboardRoute = require('./routes/dashboard');
 app.use('/dashboard', dashboardRoute);
