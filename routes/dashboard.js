@@ -47,17 +47,17 @@ router.get('/', (req, res) => {
                 matches.forEach(m => {
                     let clng = {};
                     clng._id = m._id;
-                    clng.gameName = m.game.name;
+                    clng.gameName = FUNC.protectedString(m.game.name);
                     clng.challenger = m.challenger ? {
                         _id: m.challenger._id,
-                        full_name: m.challenger.full_name,
+                        full_name: FUNC.protectedString(m.challenger.full_name),
                         image: `../user/${m.challenger.folder}/${m.challenger.image}`,
                     } : {
                             full_name: 'undefined',
                             image: 'undefined',
                         };
                     clng.challenged = m.challenged ? {
-                        full_name: m.challenged.full_name,
+                        full_name: FUNC.protectedString(m.challenged.full_name),
                         image: `../user/${m.challenged.folder}/${m.challenged.image}`,
                     } : {
                             full_name: 'undefined',
@@ -76,9 +76,11 @@ router.get('/', (req, res) => {
                     .exec((err, feeds) => {
                         if (err) console.log(err);
                         let profileImgPath = `../user/${req.data._user.folder}/${req.data._user.image}`;
+                        let userName = FUNC.protectedString(req.data._user.full_name);
+
                         res.render('dashboard', {
                             pageTitle: 'Dashboard',
-                            userName: req.data._user.full_name,
+                            userName: FUNC.protectedString(req.data._user.full_name),
                             balence: req.data._user.balance,
                             proImg: profileImgPath,
                             availableGames: gameList,
@@ -148,7 +150,7 @@ router.post('/game/add', (req, res) => {
         $push: {
             games: {
                 _id: mongoose.Types.ObjectId(req.body.game_id),
-                contact_string: req.body.contact_str
+                contact_string: FUNC.protectedString(req.body.contact_str)
             }
         }
     }, (err, raw) => {

@@ -20,6 +20,7 @@ router.get('/', (req, res) => {
         dataSet.date = `${t.date.getDate()} / ${t.date.getMonth() + 1} / ${t.date.getFullYear()}`;
         transactionLog.push(dataSet);
     });
+    transactionLog.reverse();
     let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
     res.render('wallet', {
         pageTitle: 'wallet',

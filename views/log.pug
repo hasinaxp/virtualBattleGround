@@ -27,7 +27,9 @@ block content
                         tbody
                             each match in matchResults
                                     tr
-                                        td.matchInfoShow(data-id=match._id, style="cursor:pointer;") #{match.opponent.full_name}
+                                        td
+                                            -var dUrl = '/profile/' + match.opponent._id;
+                                            a.bc(data-id='${i._id}', href=dUrl) #{match.opponent.full_name}
                                         td #{match.balance} BP 
                                         case match.result
                                             when 'won'

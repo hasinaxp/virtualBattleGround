@@ -1,3 +1,10 @@
+document.getElementById("mx_message")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("mx_send").click();
+    }
+});
 $(document).ready(function() {
   $('input#mx_message').characterCounter();
   $('.modal').modal();
@@ -20,10 +27,11 @@ $(document).ready(function() {
   }
 
 
-
+//connection url
+let url = 'http://159.89.163.24:80';
 
   //sockets magic
-  const socket = io.connect('http://localhost:3000');
+  const socket = io.connect(url);
   const responseUrl = "msgcame" + $('#mx_id').val();
 
   socket.on('connect', (data) => {
@@ -40,6 +48,7 @@ $(document).ready(function() {
     });
 
   });
+  
 
   $('#mx_send').on('click', function() {
     let c_id = $('#mx_con').val();

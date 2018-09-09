@@ -34,6 +34,7 @@ router.get('/', (req, res) => {
                         image: `../user/${m.challenger.folder}/${m.challenger.image}`,
                     }
                     clng.challenged = {
+                        _id: m.challenged._id,
                         full_name: m.challenged.full_name,
                         image: `../user/${m.challenged.folder}/${m.challenged.image}`,
                     }

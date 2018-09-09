@@ -342,7 +342,7 @@ exports.matchDission = (matchId, winner, cb) => {
             .exec((err, m) => {
                 if (err) console.log(err);
                 let data = {
-                    winner: m.challenger,
+                    winner: m.challenged,
                     match: m,
                     bp: m.balance
                 };
@@ -679,6 +679,10 @@ exports.isInTournament = (tournamentId, playerId, cb) =>{
         else
             cb(false);
     });
+}
+exports.protectedString = (str) => {
+    str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return str;
 }
 
 

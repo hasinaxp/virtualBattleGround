@@ -9,6 +9,7 @@ const path = require('path');
 
 //database configaration file
 const config = require('./config/database');
+const credentials = require('./config/credentials');
 
 //database connection
 mongoose.connect(config.database);
@@ -23,8 +24,9 @@ db.on('error', function (err) {
 })
 
 //app port
-const port = 3000;
-
+const port = credentials.port;
+//app host
+const host = credentials.host;
 //app Creation
 const app = express();
 
@@ -38,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'views')));
 //set up local
 app.locals.dat = {
     basePath: path.resolve(),
+    baseUrl : `${host}:${port}`,
     stringArray : []
 }
 
@@ -104,7 +107,7 @@ app.use('/func/info', infoRoute);
 
 
 //server-listen
-const server = app.listen(port, '0.0.0.0', () => {
+const server = app.listen(port, host, () => {
     console.log(`listening on port : ${port}`);
 });
 

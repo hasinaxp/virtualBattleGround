@@ -1,6 +1,7 @@
 extends layout.pug
-block links
+block metadata
     meta(name='google-signin-client_id', content='40026128533-5nf4htr79k3ji8i8nbl8tm35b3rd9ssj.apps.googleusercontent.com')
+block links
     link(rel="stylesheet", href="css/main.css")
     script(src='https://apis.google.com/js/platform.js', async='', defer='')
 
@@ -19,7 +20,7 @@ block content
                 .row.center
                     h5.center.grey-text.text-lighten-5 start making money through compititive gaming
                 .row.center
-                    a(href="#modalRegister").btn-big.waves-effect.waves-dark.hoverable.modal-trigger register now
+                    a(href="#modalRegister").btn-big.waves-effect.waves-dark.hoverable.modal-trigger.reg-t register now
                 br
             .parallax
                 img(src="img/background1.jpg", alt="")

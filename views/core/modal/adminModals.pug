@@ -90,11 +90,11 @@
                     br
                     a.btn-norm#d-win2  declear winner
 //-modal for adding tournament
-#modalAddTournament.modal(style="overflow: visible !important;")
+#modalAddTournament.modal
     .modal-content
         h2.grey-text.text-darken-2.center.flow-text Add Tournament
         .hg-1
-        .row.box-x
+        .row.box-x(style='overflow : scroll !important; max-height: 400px;')
             .row.input-field.ifld
                 select(name="game", id="a_t_game")
                     option(value='', disabled='', selected='') Select Game

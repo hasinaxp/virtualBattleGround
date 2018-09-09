@@ -49,7 +49,7 @@ router.get('/join/:tournament_id', (req, res) => {
                             //console.log(tournament);
                             res.json({
                                 status : 1
-                            })
+                            });
                         });
                     }
                 });

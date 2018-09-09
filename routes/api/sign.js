@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const emailExistence = require('email-existence');
 const FUNC = require('../../controls/functions');
 const saltRounds = 10;
 
@@ -31,50 +32,65 @@ router.post('/register', (req, res) => {
         console.log(errors);
         res.json({ errors: errors });
     } else {
-        User.find({ email: req.body.email }, (err, any) => {
-            if (err) console.log(err);
-            if (any.length) {
-                res.json({ errors: [{ msg: 'email-id is already registered' }, { msg: 'try other email-id' }] });
-            }
-            else {
-                let user = new User();
-                user.full_name = req.body.full_name;
-                user.email = req.body.email;
-                user.password = req.body.password;
-                user.connection_string = 'theBrightSun';
-                let fld = FUNC.makeString('user');
-                user.folder =fld;
-                user.image = 'default.jpg';
-                user.date = Date.now();
-                let newPath = req.app.locals.dat.basePath + '/public/user/' + fld;
-                //console.log(newPath);
-                if (!fs.existsSync(newPath)) {
-                    fs.mkdirSync(newPath);
-                }
-                fs.createReadStream(req.app.locals.dat.basePath + '/public/img/default.jpg').pipe(fs.createWriteStream(newPath + '/default.jpg'));
-                bcrypt.genSalt(saltRounds, function (err, salt) {
-                    bcrypt.hash(user.password, salt, function (err, hash) {
-                        user.password = hash;
-                        user.save((err, ur) => {
-
-                            if(err) console.log(err);
-                            if(ur){
-                                res.json({
-                                    success: ' Registration successful.'
+        emailExistence.check(req.body.email, function(err, t){
+            //if(err) console.log(err)
+            if(!t)
+            {
+                let error = [{
+                    location : 'body',
+                    msg : 'this is not a valid email',
+                    param : 'email'
+                }]
+                res.json({ errors: error });
+                
+            }else {
+                User.find({ email: req.body.email }, (err, any) => {
+                    if (err) console.log(err);
+                    if (any.length) {
+                        res.json({ errors: [{ msg: 'email-id is already registered' }, { msg: 'try other email-id' }] });
+                    }
+                    else {
+                        let user = new User();
+                        user.full_name = FUNC.protectedString(req.body.full_name);
+                        user.email = FUNC.protectedString(req.body.email);
+                        user.password = FUNC.protectedString(req.body.password);
+                        user.connection_string = 'theBrightSun';
+                        let fld = FUNC.makeString('user');
+                        user.folder =fld;
+                        user.image = 'default.jpg';
+                        user.date = Date.now();
+                        let newPath = req.app.locals.dat.basePath + '/public/user/' + fld;
+                        //console.log(newPath);
+                        if (!fs.existsSync(newPath)) {
+                            fs.mkdirSync(newPath);
+                        }
+                        fs.createReadStream(req.app.locals.dat.basePath + '/public/img/default.jpg').pipe(fs.createWriteStream(newPath + '/default.jpg'));
+                        bcrypt.genSalt(saltRounds, function (err, salt) {
+                            bcrypt.hash(user.password, salt, function (err, hash) {
+                                user.password = hash;
+                                user.save((err, ur) => {
+        
+                                    if(err) console.log(err);
+                                    if(ur){
+                                        res.json({
+                                            success: ' Registration successful.'
+                                        });
+                                    }
                                 });
-                            }
-                        });
-                    });
-                });          
+                            });
+                        });          
+                    }
+                });         
             }
         });
+        
     }
 });
 
 //login
 router.post('/login', (req, res, next) => {
-    let emailAddress = req.body.email;
-    let password = req.body.password;
+    let emailAddress = FUNC.protectedString(req.body.email);
+    let password = FUNC.protectedString(req.body.password);
     User.findOne({ email: emailAddress }, (err, user) => {
         if (err) throw err;
         if (user) {

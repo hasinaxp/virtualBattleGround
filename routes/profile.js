@@ -43,6 +43,8 @@ router.get('/', (req, res) => {
 });
 router.get('/:id', (req, res) => {
     let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
+    let levelInfo = FUNC.calculateLevel(req.data._user.leader_point);
+    console.log(levelInfo);
     FUNC.existsUser(req.params.id, res, () => {
         FUNC.userInfoGetter(req.params.id, (user) => {
             res.render('profileOther', {
@@ -51,7 +53,7 @@ router.get('/:id', (req, res) => {
                 userName: req.data._user.full_name,
                 balence: req.data._user.balance,
                 user: user,
-                userImage: `/user/${user.folder}/${user.image}`
+                proImg2: `/user/${user.folder}/${user.image}`
             });
         });
     });
@@ -88,7 +90,7 @@ router.post('/update/name/:id', (req, res) => {
         res.redirect('dashboard/error');
     }
     else {
-        User.findByIdAndUpdate(req.params.id, { $set: { full_name: req.body.name } })
+        User.findByIdAndUpdate(req.params.id, { $set: { full_name: FUNC.protectedString(req.body.name) } })
             .exec((err, dat) => {
                 if (err) console.log(err);
                 else {
@@ -112,7 +114,7 @@ router.post('/update/phone/:id', (req, res) => {
 });
 //change address
 router.post('/update/address/:id', (req, res) => {
-    User.findByIdAndUpdate(req.params.id, { $set: { address: req.body.address } })
+    User.findByIdAndUpdate(req.params.id, { $set: { address: FUNC.protectedString(req.body.address) } })
         .exec((err, dat) => {
             if (err) console.log(err);
             else {

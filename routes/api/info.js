@@ -1,7 +1,7 @@
 const express = require('express');
 const authentication = require('../../controls/authenticate');
 const router = express.Router();
-
+const FUNC = require('../../controls/functions');
 router.use(authentication.kick);
 
 //-------------------------db schema constants-----------------------------------------------
@@ -9,6 +9,7 @@ router.use(authentication.kick);
 const User = require('../../models/user');
 const Game = require('../../models/game');
 const Match = require('../../models/match');
+
 
 
 //------------------------functional-----------------------------------------------------------
@@ -38,7 +39,7 @@ router.post('/getChallangerList', (req, res) => {
                 else {
                     users.forEach(i => {
                         let dat = {};
-                        dat.full_name = i.full_name;
+                        dat.full_name = FUNC.protectedString(i.full_name);
                         dat._id = i._id;
                         dat.image = `../user/${i.folder}/${i.image}`;
                         dat.games = i.games;
@@ -48,6 +49,7 @@ router.post('/getChallangerList', (req, res) => {
                             listx.push(dat);
                         }
                     });
+                    
                     res.json({ list: listx, status: true });
                 }
             });
@@ -59,7 +61,7 @@ router.post('/getChallangerList', (req, res) => {
                 else {
                     users.forEach(i => {
                         let dat = {};
-                        dat.full_name = i.full_name;
+                        dat.full_name = FUNC.protectedString(i.full_name);
                         dat._id = i._id;
                         dat.image = `../user/${i.folder}/${i.image}`;
                         dat.games = i.games;
