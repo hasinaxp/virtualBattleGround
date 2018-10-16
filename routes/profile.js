@@ -28,32 +28,44 @@ const imageUpload = multer({
 }).single('image');
 
 
-
 //---------routes------------------------------------------------------
 
 router.get('/', (req, res) => {
     let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
-    res.render('profile', {
-        pageTitle: 'profile',
-        proImg: profileImgPath,
-        userName: req.data._user.full_name,
-        balence: req.data._user.balance,
-        user: req.data._user
+    let levelInfo = FUNC.calculateLevel(req.data._user.leader_point);
+    let achieveMentInfo = FUNC.calculateAchievements(req.data._user.total_bp_win, req.data._user.leader_point, req.data._user.total_win);
+    FUNC.matchData(req.data._user._id, (matchData) => {
+        res.render('profile', {
+            pageTitle: 'profile',
+            proImg: profileImgPath,
+            userName: req.data._user.full_name,
+            balence: req.data._user.balance,
+            user: req.data._user,
+            level: levelInfo,
+            achievements: achieveMentInfo.achieved,
+            match: matchData
+        });
     });
 });
+
 router.get('/:id', (req, res) => {
     let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
-    let levelInfo = FUNC.calculateLevel(req.data._user.leader_point);
-    console.log(levelInfo);
     FUNC.existsUser(req.params.id, res, () => {
         FUNC.userInfoGetter(req.params.id, (user) => {
-            res.render('profileOther', {
-                pageTitle: 'profile',
-                proImg: profileImgPath,
-                userName: req.data._user.full_name,
-                balence: req.data._user.balance,
-                user: user,
-                proImg2: `/user/${user.folder}/${user.image}`
+            let levelInfo = FUNC.calculateLevel(user.leader_point);
+            let achieveMentInfo = FUNC.calculateAchievements(user.total_bp_win, user.leader_point, user.total_win);
+            FUNC.matchData(req.params.id, (matchData) => {
+                res.render('profileOther', {
+                    pageTitle: 'profile',
+                    proImg: profileImgPath,
+                    userName: req.data._user.full_name,
+                    balence: req.data._user.balance,
+                    user: user,
+                    level: levelInfo,
+                    achievements: achieveMentInfo.achieved,
+                    proImg2: `/user/${user.folder}/${user.image}`,
+                    match: matchData
+                });
             });
         });
     });
@@ -163,6 +175,7 @@ router.post('/update/password/:id', (req, res) => {
 
     })
 });
+
 
 
 module.exports = router;

@@ -22,7 +22,7 @@
             .row
                 form(method='POST',action ='profile/update/name/'+user._id).col.s12#editProfileName
                     .row.input-field.ifld
-                        input(type="text" id="p_name" name="name").validate 
+                        input(type="text" id="p_name" name="name", required="").validate 
                         label(for='p_name') New Name
                     .row.center
                             button(type="submit" ).btn.cyan.waves-effect.waves-light.center Change
@@ -35,10 +35,10 @@
                 form(method='POST',action ='profile/update/name/'+user._id).col.s12#editPassword
                     input(type='hidden', id='x-code', value=user._id)
                     .row.input-field.ifld
-                        input(type="password" id="p_passOld" name="paassword").validate 
+                        input(type="password" id="p_passOld" name="paassword", required="").validate 
                         label(for='p_passOld') Old Password
                     .row.input-field.ifld
-                        input(type="password" id="p_passNew" name="password_new").validate 
+                        input(type="password" id="p_passNew" name="password_new", required="").validate 
                         label(for='p_passNew') New Password
                     .row
                             p.left.red-text#errMsgPassword.small

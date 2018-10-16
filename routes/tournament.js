@@ -63,9 +63,8 @@ router.get('/join/:tournament_id', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-
     Tournament.findById(req.params.id)
-        .populate('game')
+        .populate('game players')
         .exec((err, tournament) => {
             if (err) console.log(err);
             FUNC.isInTournament(req.params.id, req.data._user._id, (isInTournament) => {
@@ -75,6 +74,7 @@ router.get('/:id', (req, res) => {
                 res.render('tournamentDetail', {
                     gameName: tournament.game.name,
                     tournamentId: tournament._id,
+                    players : players,
                     capacity: tournament.player_count,
                     prize1: prize1,
                     prize2: prize2,

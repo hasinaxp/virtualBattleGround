@@ -276,7 +276,6 @@ body
   
   .paging-nav,
   #tableData {
-    width: 400px;
     margin: 10px;
     font-family: Arial, sans-serif;
   }

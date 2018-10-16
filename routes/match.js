@@ -78,6 +78,14 @@ router.get('/:id', (req, res) => {
 
 
 //-------------------------match functions-----------------------------------------------
+//request admin
+//need to implement
+router.post('/requestAdmin', (req, res) =>{
+
+});
+
+
+
 // admitting defeat
 router.post('/admitDefeate', (req, res) => {
     //console.log(req.body);

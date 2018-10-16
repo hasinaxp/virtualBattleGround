@@ -1,9 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const jimp = require('jimp');
 const FUNC = require('../controls/functions');
-
-
 
 const router = express.Router();
 
@@ -100,6 +99,12 @@ router.get('/', (req, res) => {
 
 
 //------------------- admin events ----------------------------------
+//cancel match...(if not tournament)
+router.get('/cancel/:id', (req, res) => {
+
+});
+
+
 
 //decision info load route
 
@@ -108,7 +113,6 @@ router.get('/decision/:id', (req, res) => {
         .populate('challenged challenger game')
         .exec((err, m) => {
             if (err) console.log(err);
-
                 let clng = {};
                 clng._id = m._id;
                 clng.gameName = m.game.name;
@@ -194,7 +198,6 @@ router.post('/makeVictor', (req, res) => {
 });
 
 //game add route
-
 router.post('/game/add', gameimageUpload, (req, res) => {
     let game = new Game();
     game.name = req.body.name;
@@ -237,6 +240,14 @@ router.post('/game/remove', nupload.fields([]), (req, res) => {
 router.post('/feed/add', feedImageUpload,(req, res) => {
     console.log(req.body);
     console.log(req.imageStringArray);
+    let image = `${req.app.locals.dat.basePath}/public/feedimage/${ req.data.name}/${req.data.exten}`
+    jimp.read(image, function (err, lenna) {
+        if (err) throw err;
+        lenna
+            .resize(640, jimp.AUTO)
+            .quality(80)                 // set JPEG quality
+            .write(image); // save
+    });
     let feed = new Feed();
     feed.title = req.body.title;
     feed.content = req.body.content.replace(/\r?\n/g, '<br />');

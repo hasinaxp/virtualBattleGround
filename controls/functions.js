@@ -611,7 +611,7 @@ exports.getTournamentTree = (tournamentId, cb) => {
                 console.log(err);
             else {
                 //let returnArray = [];
-                
+                //preparation of scaliton
                 let tree = [];
                 for(let i = 0; i < tournament.max_stage; i++) {
                     let level = [];
@@ -633,6 +633,7 @@ exports.getTournamentTree = (tournamentId, cb) => {
                     }
                 ];
                 tree.push(champ);
+                // registering all data
                 for(let i = 0; i < tournament.stage; i++) {
                     let temp = frontSlice(TournamentSets, tournament.matches_per_round[i]);
                     tree[i] = temp;
@@ -656,6 +657,28 @@ exports.getTournamentTree = (tournamentId, cb) => {
                         ];
                         tree[tournament.max_stage] = champ;
                     }
+                } else {
+                    //subject to change .... experimental
+                    //alter logic of last round winners
+                    let lastStanding = tree[tournament.stage - 1];
+                    let finalStage = [];
+                    for(let i = 0; i < lastStanding.length; i += 2) {
+                        let nextMaal = {
+                            player1 : {name :'', ID : 4000000, winner : false},
+                            player2 : {name :'', ID : 4000000, winner : false}
+                        }
+                        if(lastStanding[i].player1.winner)
+                            nextMaal.player1 = lastStanding[i].player1;
+                        if(lastStanding[i].player2.winner)
+                            nextMaal.player1 = lastStanding[i].player2;
+                        if(lastStanding[i + 1].player1.winner)
+                            nextMaal.player2 = lastStanding[i + 1].player1;
+                        if(lastStanding[i].player2.winner)
+                            nextMaal.player2 = lastStanding[i + 1].player2;
+                        finalStage.push(nextMaal);
+                    }
+
+                    tree[tournament.stage] = finalStage;
                 }
                 rounds.push(`final`);
                 let data = {
@@ -685,5 +708,25 @@ exports.protectedString = (str) => {
     return str;
 }
 
-
-
+exports.matchData = (userId, cb) => {
+    let user = mongoose.ObjectId(userId)
+    Match.find({$or : [{challenger : user}, {challenged : user}]})
+    .exec((err, matches) => {
+        if(err) console.log(user);
+        let winCount  = 0;
+        let matchCount = matches.length;
+        matches.forEach( m => {
+            if(m.challenger == user && m.state == 2)
+                winCount++;
+            if(m.challenged == user && m.state == 3)
+                winCount++;
+        });
+        let averageWin = winCount * 100 / matchCount;
+        let data =  {
+            m_average : averageWin,
+            m_match : matchCount,
+            m_win : winCount
+        }
+        cb(data);
+    });
+}

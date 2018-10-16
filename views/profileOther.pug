@@ -34,6 +34,26 @@ block content
                             span.sp4 Balance :
                         .col.s8
                             span #{user.balance} BP
+                    .row
+                        .col.s4
+                            span.sp4 Total Win :
+                        .col.s8
+                            span=user.total_win
+                    .row
+                        .col.s4
+                            span.sp4 Level :
+                        .col.s8
+                            span=level.m_level
+                    .row
+                        .col.s4
+                            span.sp4 Leader points :
+                        .col.s8
+                            span=level.m_total
+                    .row
+                        .col.s4
+                            span.sp4 Total Winning :
+                        .col.s8
+                            span #{user.total_bp_win} BP
 
 
     .hg1
