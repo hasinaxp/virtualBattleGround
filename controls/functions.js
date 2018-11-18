@@ -709,19 +709,25 @@ exports.protectedString = (str) => {
 }
 
 exports.matchData = (userId, cb) => {
-    let user = mongoose.ObjectId(userId)
+    let user = mongoose.Types.ObjectId(userId)
     Match.find({$or : [{challenger : user}, {challenged : user}]})
     .exec((err, matches) => {
         if(err) console.log(user);
         let winCount  = 0;
-        let matchCount = matches.length;
+        let matchCount = 0;
         matches.forEach( m => {
-            if(m.challenger == user && m.state == 2)
-                winCount++;
-            if(m.challenged == user && m.state == 3)
-                winCount++;
+            if(m.state == 2){
+                if(m.challenger.equals(user))
+                    winCount++;
+                matchCount++;
+            }
+            if(m.state == 3) {
+                if(m.challenged.equals(user))
+                    winCount++;
+                matchCount++;
+            }
         });
-        let averageWin = winCount * 100 / matchCount;
+        let averageWin = Math.floor(winCount * 100 / matchCount)
         let data =  {
             m_average : averageWin,
             m_match : matchCount,

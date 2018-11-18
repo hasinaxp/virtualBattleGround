@@ -8,7 +8,7 @@ const saltRounds = 10;
 const router = express.Router();
 
 const User = require('../../models/user');
-const Balance = require('../../models/balance');
+
 
 //making a new connectionString
 function makeConnectionString() {
@@ -82,8 +82,7 @@ router.post('/register', (req, res) => {
                     }
                 });         
             }
-        });
-        
+        });    
     }
 });
 

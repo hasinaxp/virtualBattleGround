@@ -74,7 +74,7 @@ router.get('/:id', (req, res) => {
                 res.render('tournamentDetail', {
                     gameName: tournament.game.name,
                     tournamentId: tournament._id,
-                    players : players,
+                    players : tournament.players,
                     capacity: tournament.player_count,
                     prize1: prize1,
                     prize2: prize2,

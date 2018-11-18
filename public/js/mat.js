@@ -28,8 +28,8 @@ $(document).ready(function() {
 
 
 //connection url
-let url = 'http://159.89.163.24:80';
-
+//let url = 'http://159.89.163.24:80';
+let url = 'http://localhost:3000'
   //sockets magic
   const socket = io.connect(url);
   const responseUrl = "msgcame" + $('#mx_id').val();

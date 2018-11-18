@@ -14,7 +14,9 @@ block content
     .container
         ul.collapsible.popout
             li.active
-                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2 Clallanges 
+                .collapsible-header.c2.waves-effect.waves-light.light-green-text.text-accent-2
+                    i.fa.fa-gamepad
+                    | &nbsp Clallanges 
                 .c3.collapsible-body
                     span This section contains all the challenges you send or recieve.
                     br
@@ -22,7 +24,9 @@ block content
                         each cg in challenges
                             include ./core/sticker/challangeCard.pug
             li.active
-                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Matches 
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2
+                    i.fa.fa-gamepad
+                    | &nbsp Matches 
                 .c3.collapsible-body
                     span This section contains all the ongoing pvp matches.
                     br
@@ -30,7 +34,9 @@ block content
                         each cg in matches
                             include ./core/sticker/matchCard.pug
             li.active
-                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Game Library
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2
+                    i.fa.fa-puzzle-piece
+                    | &nbsp Game Library
                 .c3.collapsible-body
                     span Current Includes
                     br
@@ -43,7 +49,9 @@ block content
                             i.fa.fa-trophy.light-green-text.text-accent-3
                             |                             add game
             li.active
-                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2 Feeds
+                .c2.collapsible-header.waves-effect.waves-light.light-green-text.text-accent-2
+                    i.fa.fa-newspaper-o
+                    | &nbsp Feeds
                 .c3.collapsible-body
                     .galary
                         each feed in feeds

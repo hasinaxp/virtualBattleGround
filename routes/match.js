@@ -56,17 +56,21 @@ router.get('/:id', (req, res) => {
                 }
             });
 
+            let matchTime = new Date(match.date);
+            let matchDate = matchTime.getUTCDay() + ' / ' + matchTime.getMonth() + ' / ' + matchTime.getFullYear();
+            matchDate += ` - ${matchTime.getUTCHours()} : ${matchTime.getUTCMinutes()}`
+
             res.render('match', {
                 pageTitle: 'match',
                 gameName: match.game.name,
                 c_ref: contactReferance,
                 matchId: match._id,
-                challenger: match.challenger.full_name,
+                challenger: match.challenger,
                 c_id: match.challenger._id,
                 x_id: req.data._user._id,
                 chatId: match.chatroom._id,
-                challenged: match.challenged.full_name,
-                time: match.date,
+                challenged: match.challenged,
+                time: matchDate,
                 bet: match.balance,
                 sender: req.data._user.full_name,
                 state: match.state,

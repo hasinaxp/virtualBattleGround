@@ -3,7 +3,6 @@ const multer = require('multer');
 const path = require('path');
 const jimp = require('jimp');
 const FUNC = require('../controls/functions');
-
 const router = express.Router();
 
 //setting up the storage

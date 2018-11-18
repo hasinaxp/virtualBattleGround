@@ -27,7 +27,6 @@ const imageUpload = multer({
     storage: imageStorage
 }).single('image');
 
-
 //---------routes------------------------------------------------------
 
 router.get('/', (req, res) => {
@@ -35,6 +34,7 @@ router.get('/', (req, res) => {
     let levelInfo = FUNC.calculateLevel(req.data._user.leader_point);
     let achieveMentInfo = FUNC.calculateAchievements(req.data._user.total_bp_win, req.data._user.leader_point, req.data._user.total_win);
     FUNC.matchData(req.data._user._id, (matchData) => {
+        console.log(matchData)
         res.render('profile', {
             pageTitle: 'profile',
             proImg: profileImgPath,

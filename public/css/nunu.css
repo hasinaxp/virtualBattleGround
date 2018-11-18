@@ -5,14 +5,11 @@
 }
 .bubble
 {
-    border-bottom: 1px solid green;
-    border-left: 2px solid green;
     margin: 5px;
     margin-bottom: 10px !important;
     padding: 4px;
     padding-left: 10px;
     box-sizing:border-box;
-    border-radius: 114px;
 }
 .s_name
 {
@@ -21,6 +18,9 @@
 .s_message
 {
     margin-left: 20px;
+    padding: 10px;
+    background-color:  #ffffff33;
+    border-radius: 0 20px 20px 20px;
 }
 .v
 {
@@ -37,7 +37,7 @@
 }
 #chat-list-container
 {
-    max-height: 500px; 
+    max-height: 60vh; 
     overflow-y: scroll;
     margin-bottom: 2rem;
 }

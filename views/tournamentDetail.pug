@@ -13,7 +13,9 @@ block content
     .hg
     .container
         .xrv
-            a(href="/dashboard") back to dashboard
+            a(href="/dashboard")
+                i.fa.fa-arrow-left
+                | &nbsp back to dashboard
         .card-panel.c1.base
             .container
                 .row
@@ -58,7 +60,21 @@ block content
         .card-panel.c1.base
             h3.center rules
             p.sp4 !{rules}
-
+        .hg
+        .card-panel.c1.base
+            h3.center Players
+            br
+            .row
+                each player in players
+                    .col.s12.m6
+                        -var imgSrc = '/user/' + player.folder + '/' + player.image
+                        -var linkPlayer = '/profile/'+player._id
+                        a(href=linkPlayer)
+                            .row.hoverable
+                                .col.s4
+                                    img.img-pin(src=imgSrc, height=50).circle
+                                .col.s6
+                                    h6(style="margin-top: 20px;") #{player.full_name}
         .hg
         if !isPlaying
             .card-panel.c1.base

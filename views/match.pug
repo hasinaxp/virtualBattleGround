@@ -13,7 +13,9 @@ block content
     .hg
     .container
         .xrv
-            a(href="/dashboard") back to dashboard
+            a(href="/dashboard")
+                i.fa.fa-arrow-left
+                | &nbsp back to dashboard
         .card-panel.c1.base
             .container
                 .row
@@ -28,12 +30,16 @@ block content
                     .col.m6.s12
                         span.sp4 Challenger:
                     .col.m6.s12
-                        span #{challenger}
+                        -var dUrl = '/profile/' + challenger._id;
+                        a.bc(data-id='${i._id}', href=dUrl)
+                            span #{challenger.full_name}
                 .row
                     .col.m6.s12
                         span.sp4 Challenged:
                     .col.m6.s12
-                        span #{challenged}
+                        -var dUrl = '/profile/' + challenged._id;
+                        a.bc(data-id='${i._id}', href=dUrl)
+                            span #{challenged.full_name}
                 .row
                     .col.m6.s12
                         span.sp4 Time of challange:

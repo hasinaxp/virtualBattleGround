@@ -108,7 +108,7 @@ app.use('/func/info', infoRoute);
 
 //server-listen
 const server = app.listen(port, host, () => {
-    console.log(`listening on port : ${port}`);
+    console.log(`listening on port ${host}:${port}`);
 });
 
 //main io object
