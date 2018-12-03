@@ -15,7 +15,7 @@ const gameStorage = multer.diskStorage({
     }
 });
 
-const prepareStorage = (req, res, next) =>{
+const prepareStorage = (req, res, next) => {
     req.imageStringArray = [];
     return next();
 }
@@ -41,11 +41,12 @@ const Game = require('../models/game');
 const Match = require('../models/match');
 const Tournament = require('../models/tournament');
 const Feed = require('../models/feed');
+const Chat = require('../models/chat');
 
 //admin home route
 router.get('/', (req, res) => {
     //finding matches
-    Match.find({ state : 4 })
+    Match.find({ state: 4 })
         //.sort({ date: -1 })
         .populate('challenged challenger game')
         .exec((err, matches) => {
@@ -54,44 +55,44 @@ router.get('/', (req, res) => {
 
             matches.forEach(m => {
 
-                    let clng = {};
-                    clng._id = m._id;
-                    clng.gameName = m.game.name;
-                    clng.date = m.date;
-                    clng.balance = m.balance;
-                    matchResults.push(clng);
+                let clng = {};
+                clng._id = m._id;
+                clng.gameName = m.game.name;
+                clng.date = m.date;
+                clng.balance = m.balance;
+                matchResults.push(clng);
             });
             //finding games
             Game.find({}, (err, games) => {
                 if (err) console.log(err);
-                
+
                 //finding tournaments
                 Tournament.find()
-                .populate('game')
-                .exec((err, tournaments) => {
-                    if(err) console.log(err);
-                    let tournamentsOngoing =[],
-                        tournamentsYetToStart =[];
-                    tournaments.forEach( tour => {
-                        if(!tour.has_ended) {
-                            if(tour.stage == 0)
-                            tournamentsYetToStart.push(tour);
-                        else
-                            tournamentsOngoing.push(tour);
-                        }
-                    });
-                    res.render('admin', {
-                        pageTitle: 'admin',
-                        testMsg: 'working fine',
-                        games: games,
-                        userName: 'Spandan Mondal',
-                        userCnt: 100000,
-                        matches: matchResults,
-                        tournaments_ongoing : tournamentsOngoing,
-                        tournaments_yet_to_start : tournamentsYetToStart
-                    });
+                    .populate('game')
+                    .exec((err, tournaments) => {
+                        if (err) console.log(err);
+                        let tournamentsOngoing = [],
+                            tournamentsYetToStart = [];
+                        tournaments.forEach(tour => {
+                            if (!tour.has_ended) {
+                                if (tour.stage == 0)
+                                    tournamentsYetToStart.push(tour);
+                                else
+                                    tournamentsOngoing.push(tour);
+                            }
+                        });
+                        res.render('admin', {
+                            pageTitle: 'admin',
+                            testMsg: 'working fine',
+                            games: games,
+                            userName: 'Spandan Mondal',
+                            userCnt: 100000,
+                            matches: matchResults,
+                            tournaments_ongoing: tournamentsOngoing,
+                            tournaments_yet_to_start: tournamentsYetToStart
+                        });
 
-                })
+                    })
             });
         });
 });
@@ -100,41 +101,62 @@ router.get('/', (req, res) => {
 //------------------- admin events ----------------------------------
 //cancel match...(if not tournament)
 router.get('/cancel/:id', (req, res) => {
-
+    FUNC.isTournament(req.params.id, () => {
+        res.json({
+            error: 'this is a tournament',
+            status: -1
+        })
+    }, () => {
+        Match.findById(req.params.id)
+            .exec((err, match) => {
+                FUNC.calculateBalance(match.challenger, match.balance, 1, "Match cancelled!", () => {
+                    FUNC.calculateBalance(match.challenged, match.balance, 1, "Match cancelled!", () => {
+                        Chat.findByIdAndDelete(match.chatroom, (err, c) => {
+                                if(err) console.log(err);
+                            Match.findByIdAndRemove(req.params.id, (err, m) => {
+                                if(err) console.log(err);
+                                res.json({
+                                    msg: 'Match deleted successfully.',
+                                    status: 1
+                                })
+                            })
+                        })
+                    })
+                });
+            })
+    })
 });
 
 
-
 //decision info load route
-
 router.get('/decision/:id', (req, res) => {
     Match.findById(req.params.id)
         .populate('challenged challenger game')
         .exec((err, m) => {
             if (err) console.log(err);
-                let clng = {};
-                clng._id = m._id;
-                clng.gameName = m.game.name;
-                i1 = m.challenger_evidance_state? m.challenger_evidance : 'no';
-                i2 = m.challenged_evidance_state? m.challenged_evidance : 'no';
-                clng.challenger = {
-                    _id: m.challenger._id,
-                    full_name: m.challenger.full_name,
-                    email : m.challenger.email,
-                    image: i1,
-                }
-                clng.challenged = {
-                    full_name: m.challenged.full_name,
-                    email : m.challenged.email,
-                    image: i2,
-                }
-                clng.date = m.date;
-                clng.balance = m.balance;
-                console.log(i1);
-                console.log(i2);
-                res.json(clng);
+            let clng = {};
+            clng._id = m._id;
+            clng.gameName = m.game.name;
+            i1 = m.challenger_evidance_state ? m.challenger_evidance : 'no';
+            i2 = m.challenged_evidance_state ? m.challenged_evidance : 'no';
+            clng.challenger = {
+                _id: m.challenger._id,
+                full_name: m.challenger.full_name,
+                email: m.challenger.email,
+                image: i1,
+            }
+            clng.challenged = {
+                full_name: m.challenged.full_name,
+                email: m.challenged.email,
+                image: i2,
+            }
+            clng.date = m.date;
+            clng.balance = m.balance;
+            console.log(i1);
+            console.log(i2);
+            res.json(clng);
 
-    });
+        });
 });
 
 //decision route
@@ -168,8 +190,8 @@ router.post('/makeVictor', (req, res) => {
             });
         }
 
-    },() => {
-        if(victor == 'p1') {
+    }, () => {
+        if (victor == 'p1') {
             FUNC.matchDission(req.body.m_id, 'challenger', (info) => {
                 let reward = FUNC.calculateReward(info.bp);
                 FUNC.calculateBalance(info.winner, reward.m_bp, 1, "Won in Match", () => {
@@ -236,10 +258,10 @@ router.post('/game/remove', nupload.fields([]), (req, res) => {
 });
 
 //feed add route
-router.post('/feed/add', feedImageUpload,(req, res) => {
+router.post('/feed/add', feedImageUpload, (req, res) => {
     console.log(req.body);
     console.log(req.imageStringArray);
-    let image = `${req.app.locals.dat.basePath}/public/feedimage/${ req.data.name}/${req.data.exten}`
+    let image = `${req.app.locals.dat.basePath}/public/feedimage/${req.data.name}/${req.data.exten}`
     jimp.read(image, function (err, lenna) {
         if (err) throw err;
         lenna
@@ -251,32 +273,32 @@ router.post('/feed/add', feedImageUpload,(req, res) => {
     feed.title = req.body.title;
     feed.content = req.body.content.replace(/\r?\n/g, '<br />');
     feed.image = req.data.name + req.data.exten;
-    feed.date  = Date.now();
-    feed.save((err, f)=> {
-        if(err) console.log(err);
-        res.redirect('/admin'); 
+    feed.date = Date.now();
+    feed.save((err, f) => {
+        if (err) console.log(err);
+        res.redirect('/admin');
     });
 });
 router.get('/feed', (req, res) => {
     Feed.find({})
-    .exec((err, feeds) => {
-        if(err) console.log(err);
-        console.log(feeds);
-        res.json({
-            feeds : feeds,
-            status: 1
-        })
-    });
+        .exec((err, feeds) => {
+            if (err) console.log(err);
+            console.log(feeds);
+            res.json({
+                feeds: feeds,
+                status: 1
+            })
+        });
 });
 router.get('/feed/delete/:id', (req, res) => {
     Feed.findByIdAndRemove(req.params.id)
-    .exec((err, rem) => {
-        if(err) console.log(err);
-        res.json({
-                msg : `feed removed successfuly`,
+        .exec((err, rem) => {
+            if (err) console.log(err);
+            res.json({
+                msg: `feed removed successfuly`,
                 status: 1
+            });
         });
-    });
 })
 
 //tournament ------------------

@@ -205,7 +205,7 @@ exports.calculateReward = (battlePoints) => {
         m_bp: bp,
         m_lp: lp
     }
-} 
+}
 
 exports.makeString = (type) => {
     if (type == 'connection') {
@@ -276,7 +276,7 @@ function genMatch(challenger, challenged, balance, game, type, matchDirPath, tou
 }
 exports.createMatch = genMatch;
 
-function adjustBalance(user_id, bp, mode, text, cb){
+function adjustBalance(user_id, bp, mode, text, cb) {
     let log = {};
     log.date = Date.now();
     log.bp = bp;
@@ -311,7 +311,7 @@ function adjustBalance(user_id, bp, mode, text, cb){
         });
 };
 //calculating bp
-exports.calculateBalance = adjustBalance; 
+exports.calculateBalance = adjustBalance;
 //calculate leader points
 exports.calculateLeaderPoints = (user_id, leaderPoints, cb) => {
     User.findByIdAndUpdate(user_id, { $inc: { leader_point: leaderPoints, total_win: 1 } })
@@ -373,12 +373,12 @@ exports.getTournamentsUser = (user_id, games, cb) => {
             tournaments.forEach(tour => {
                 //console.log(tour.players);
                 //console.log(user_id.toString());
-                if(!tour.has_ended) {
+                if (!tour.has_ended) {
                     let players = tour.players.map(p => p.toString());
-                if (_.contains(players, user_id.toString()))
-                    perticipationTournaments.push(tour);
-                else
-                    newTournaments.push(tour);
+                    if (_.contains(players, user_id.toString()))
+                        perticipationTournaments.push(tour);
+                    else
+                        newTournaments.push(tour);
                 }
             });
             let data = {
@@ -407,7 +407,7 @@ exports.initTournament = (tournamentId, matchDirPath, cb) => {
             let matchIds = [];
             async.eachSeries(pairs, (pair, callback) => {
                 console.log(pair);
-                genMatch(pair.first, pair.second, tournament.balance, tournament.game, 'tournament', matchDirPath,tournamentId, (m) => {
+                genMatch(pair.first, pair.second, tournament.balance, tournament.game, 'tournament', matchDirPath, tournamentId, (m) => {
                     matchIds.push(mongoose.Types.ObjectId(m._id));
                     callback();
                 });
@@ -437,7 +437,7 @@ function checkCompilation(tournamentId, cb) {
                 endingIndex += tournament.matches_per_round[i];
             if (tournament.stage > 1)
                 for (let i = 0; i < tournament.stage - 1; i++)
-                startingIndex += tournament.matches_per_round[i];
+                    startingIndex += tournament.matches_per_round[i];
             else
                 startingIndex = 0;
             let matchArray = tournament.matches.slice(startingIndex, endingIndex);
@@ -468,11 +468,11 @@ function checkCompilation(tournamentId, cb) {
                     runnerUp = finalMatch.challenger;
                 }
                 data = {
-                    winner : winner,
-                    runner_up : runnerUp,
-                    balance : tournament.balance,
-                    player_count : tournament.player_count,
-                    tournament : tournament
+                    winner: winner,
+                    runner_up: runnerUp,
+                    balance: tournament.balance,
+                    player_count: tournament.player_count,
+                    tournament: tournament
                 };
                 cb(completed, data);
             } else {
@@ -480,14 +480,14 @@ function checkCompilation(tournamentId, cb) {
                     players: nextGen,
                     stage: tournament.stage + 1,
                     compilation: startingIndex,
-                    tournament : tournament
+                    tournament: tournament
                 };
                 cb(completed, data);
             }
         });
 };
 // to jump into next stage of tournament
-exports.advanceStage = (tournamentId,matchDirPath, cb) => {
+exports.advanceStage = (tournamentId, matchDirPath, cb) => {
     checkCompilation(tournamentId, (completed, data) => {
         let tournament = data.tournament;
         if (completed == 3) {
@@ -497,12 +497,12 @@ exports.advanceStage = (tournamentId,matchDirPath, cb) => {
             let prize2 = Math.floor(prize * 0.4);
             adjustBalance(data.winner, prize1, 1, "Tournament Win", () => {
                 adjustBalance(data.runner_up, prize2, 1, "Tournament Runner Up", () => {
-                    Tournament.findByIdAndUpdate(tournamentId, {$set: {has_ended : true}})
-                    .exec((err, tx) => {
-                        if(err) console.log(err);
-                        cb()
-                    })
-                })    
+                    Tournament.findByIdAndUpdate(tournamentId, { $set: { has_ended: true } })
+                        .exec((err, tx) => {
+                            if (err) console.log(err);
+                            cb()
+                        })
+                })
             });
 
         }
@@ -569,13 +569,13 @@ exports.existsUser = (id, res, cb) => {
 
 function frontShift(arr, numberOfElements) {
     let newArr = [];
-    for(let i = numberOfElements; i < arr.length; i++)
+    for (let i = numberOfElements; i < arr.length; i++)
         newArr.push(arr[i]);
     return newArr;
 }
 function frontSlice(arr, numberOfElements) {
     let newArr = [];
-    for(let i = 0; i < numberOfElements; i++)
+    for (let i = 0; i < numberOfElements; i++)
         newArr.push(arr[i]);
     return newArr;
 }
@@ -585,123 +585,123 @@ exports.getTournamentTree = (tournamentId, cb) => {
     let rounds = [];
     console.log(tournamentId);
     Tournament.findById(tournamentId)
-    .exec((err, tournament) => {
-        if(err) console.log(err);
-        //preparing match array;
-        //console.log(tournament);
-        async.eachSeries(tournament.matches, (match, callback) => {
-            Match.findById(match)
-            .populate('challenger challenged')
-            .exec((err, m) => {
-                if(err) console.log(err);
-                let pair = {
-                    player1 : {name :m.challenger? m.challenger.full_name : 'undefined', ID : m.challenger._id},
-                    player2 : {name : m.challenged? m.challenged.full_name : 'undefined', ID : m.challenged._id}
-                };
-                if(m.state == 2)
-                    pair.player1.winner = true;
-                if(m.state == 3)
-                    pair.player2.winner = true;
-                console.log(pair);
-                TournamentSets.push(pair);
-                callback();
-            });
-        }, (err) => {
-            if (err)
-                console.log(err);
-            else {
-                //let returnArray = [];
-                //preparation of scaliton
-                let tree = [];
-                for(let i = 0; i < tournament.max_stage; i++) {
-                    let level = [];
-                    for(let j = 0; j < tournament.matches_per_round[i]; j++) {
-                        let dataset = {
-                            player1 : {name :'', ID : i * j},
-                            player2 : {name :'', ID : i * j -1}
+        .exec((err, tournament) => {
+            if (err) console.log(err);
+            //preparing match array;
+            async.eachSeries(tournament.matches, (match, callback) => {
+                Match.findById(match)
+                    .populate('challenger challenged')
+                    .exec((err, m) => {
+                        if (err) console.log(err);
+                        let pair = {
+                            player1: { name: m.challenger ? m.challenger.full_name : 'undefined', ID: m.challenger._id },
+                            player2: { name: m.challenged ? m.challenged.full_name : 'undefined', ID: m.challenged._id }
                         };
-                        level.push(dataset);
-                          
-                    }
-                    if(i <tournament.max_stage)
-                            rounds.push(`Round-${i + 1}`); 
-                    tree.push(level);
-                }
-                let champ = [
-                    {
-                        player1 : {name :'', ID : 4000000, winner : false}
-                    }
-                ];
-                tree.push(champ);
-                // registering all data
-                for(let i = 0; i < tournament.stage; i++) {
-                    let temp = frontSlice(TournamentSets, tournament.matches_per_round[i]);
-                    tree[i] = temp;
-                    TournamentSets = frontShift(TournamentSets, tournament.matches_per_round[i]);
-                    
-                }
-                if(tournament.stage == tournament.max_stage) {
-                    if(tree[tournament.max_stage -1][0].player1.winner){
-                        let champ = [
-                            {
-                                player1 : {name :tree[tournament.max_stage -1][0].player1.name, ID :tree[tournament.max_stage -1][0].player1.ID, winner : true}
-                            }
-                        ];
-                        tree[tournament.max_stage] = champ;
-                    }
-                    if(tree[tournament.max_stage -1][0].player2.winner){
-                        let champ = [
-                            {
-                                player1 : {name :tree[tournament.max_stage -1][0].player2.name, ID :tree[tournament.max_stage -1][0].player2.ID, winner : true}
-                            }
-                        ];
-                        tree[tournament.max_stage] = champ;
-                    }
-                } else {
-                    //subject to change .... experimental
-                    //alter logic of last round winners
-                    let lastStanding = tree[tournament.stage - 1];
-                    let finalStage = [];
-                    for(let i = 0; i < lastStanding.length; i += 2) {
-                        let nextMaal = {
-                            player1 : {name :'', ID : 4000000, winner : false},
-                            player2 : {name :'', ID : 4000000, winner : false}
-                        }
-                        if(lastStanding[i].player1.winner)
-                            nextMaal.player1 = lastStanding[i].player1;
-                        if(lastStanding[i].player2.winner)
-                            nextMaal.player1 = lastStanding[i].player2;
-                        if(lastStanding[i + 1].player1.winner)
-                            nextMaal.player2 = lastStanding[i + 1].player1;
-                        if(lastStanding[i].player2.winner)
-                            nextMaal.player2 = lastStanding[i + 1].player2;
-                        finalStage.push(nextMaal);
-                    }
+                        if (m.state == 2)
+                            pair.player1.winner = true;
+                        if (m.state == 3)
+                            pair.player2.winner = true;
+                        console.log(pair);
+                        TournamentSets.push(pair);
+                        callback();
+                    });
+            }, (err) => {
+                if (err)
+                    console.log(err);
+                else {
+                    //let returnArray = [];
+                    //preparation of scaliton
+                    let tree = [];
+                    for (let i = 0; i < tournament.max_stage; i++) {
+                        let level = [];
+                        for (let j = 0; j < tournament.matches_per_round[i]; j++) {
+                            let dataset = {
+                                player1: { name: '', ID: i * j },
+                                player2: { name: '', ID: i * j - 1 }
+                            };
+                            level.push(dataset);
 
-                    tree[tournament.stage] = finalStage;
+                        }
+                        if (i < tournament.max_stage)
+                            rounds.push(`Round-${i + 1}`);
+                        tree.push(level);
+                    }
+                    let champ = [
+                        {
+                            player1: { name: '', ID: 4000000, winner: false }
+                        }
+                    ];
+                    tree.push(champ);
+                    // registering all data
+                    for (let i = 0; i < tournament.stage; i++) {
+                        let temp = frontSlice(TournamentSets, tournament.matches_per_round[i]);
+                        tree[i] = temp;
+                        TournamentSets = frontShift(TournamentSets, tournament.matches_per_round[i]);
+
+                    }
+                    if (tournament.stage == tournament.max_stage) {
+                        if (tree[tournament.max_stage - 1][0].player1.winner) {
+                            let champ = [
+                                {
+                                    player1: { name: tree[tournament.max_stage - 1][0].player1.name, ID: tree[tournament.max_stage - 1][0].player1.ID, winner: true }
+                                }
+                            ];
+                            tree[tournament.max_stage] = champ;
+                        }
+                        if (tree[tournament.max_stage - 1][0].player2.winner) {
+                            let champ = [
+                                {
+                                    player1: { name: tree[tournament.max_stage - 1][0].player2.name, ID: tree[tournament.max_stage - 1][0].player2.ID, winner: true }
+                                }
+                            ];
+                            tree[tournament.max_stage] = champ;
+                        }
+                    } else {
+                        //subject to change .... experimental
+                        //alter logic of last round winners
+                        let lastStanding = tree[tournament.stage - 1];
+                        let finalStage = [];
+                        if (lastStanding) {
+                            for (let i = 0; i < lastStanding.length; i += 2) {
+                                let nextMaal = {
+                                    player1: { name: '', ID: 4000000, winner: false },
+                                    player2: { name: '', ID: 4000000, winner: false }
+                                }
+                                if (lastStanding[i].player1.winner)
+                                    nextMaal.player1 = lastStanding[i].player1;
+                                if (lastStanding[i].player2.winner)
+                                    nextMaal.player1 = lastStanding[i].player2;
+                                if (lastStanding[i + 1].player1.winner)
+                                    nextMaal.player2 = lastStanding[i + 1].player1;
+                                if (lastStanding[i].player2.winner)
+                                    nextMaal.player2 = lastStanding[i + 1].player2;
+                                finalStage.push(nextMaal);
+                            }
+                            tree[tournament.stage] = finalStage;
+                        }
+                    }
+                    rounds.push(`final`);
+                    let data = {
+                        tree: tree,
+                        rounds: rounds
+                    };
+                    cb(data);
                 }
-                rounds.push(`final`);
-                let data = {
-                    tree : tree,
-                    rounds : rounds
-                };
-                cb(data);
-            }
+            });
         });
-    });
 };
 
-exports.isInTournament = (tournamentId, playerId, cb) =>{
+exports.isInTournament = (tournamentId, playerId, cb) => {
     Tournament.findById(tournamentId)
-    .exec((err, tournament) => {
-        if(err) console.log(err);
-        let player = playerId.toString();
-        let playerArr = tournament.players.map( t => { return t.toString()});
-        if(_.contains(playerArr,player))
-            cb(true);
-        else
-            cb(false);
-    });
+        .exec((err, tournament) => {
+            if (err) console.log(err);
+            let player = playerId.toString();
+            let playerArr = tournament.players.map(t => { return t.toString() });
+            if (_.contains(playerArr, player))
+                cb(true);
+            else
+                cb(false);
+        });
 }
 exports.protectedString = (str) => {
     str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -710,29 +710,29 @@ exports.protectedString = (str) => {
 
 exports.matchData = (userId, cb) => {
     let user = mongoose.Types.ObjectId(userId)
-    Match.find({$or : [{challenger : user}, {challenged : user}]})
-    .exec((err, matches) => {
-        if(err) console.log(user);
-        let winCount  = 0;
-        let matchCount = 0;
-        matches.forEach( m => {
-            if(m.state == 2){
-                if(m.challenger.equals(user))
-                    winCount++;
-                matchCount++;
+    Match.find({ $or: [{ challenger: user }, { challenged: user }] })
+        .exec((err, matches) => {
+            if (err) console.log(user);
+            let winCount = 0;
+            let matchCount = 0;
+            matches.forEach(m => {
+                if (m.state == 2) {
+                    if (m.challenger.equals(user))
+                        winCount++;
+                    matchCount++;
+                }
+                if (m.state == 3) {
+                    if (m.challenged.equals(user))
+                        winCount++;
+                    matchCount++;
+                }
+            });
+            let averageWin = Math.floor(winCount * 100 / matchCount)
+            let data = {
+                m_average: averageWin,
+                m_match: matchCount,
+                m_win: winCount
             }
-            if(m.state == 3) {
-                if(m.challenged.equals(user))
-                    winCount++;
-                matchCount++;
-            }
+            cb(data);
         });
-        let averageWin = Math.floor(winCount * 100 / matchCount)
-        let data =  {
-            m_average : averageWin,
-            m_match : matchCount,
-            m_win : winCount
-        }
-        cb(data);
-    });
 }

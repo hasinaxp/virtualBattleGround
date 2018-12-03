@@ -85,9 +85,27 @@ router.get('/:id', (req, res) => {
 //request admin
 //need to implement
 router.post('/requestAdmin', (req, res) =>{
-
+    let user = mongoose.Types.ObjectId(req.data._user._id);
+    Match.findById(req.body.m_id)
+    .exec((err, match) => {
+        if(match.challenger.equals(user)) {
+            Match.findByIdAndUpdate(req.body.m_id, {$set: {challenger_msg: req.body.msg}})
+            .exec((err, m) => {
+                res.json({
+                    msg: 'msg post successfully'
+                })
+            });
+        }
+        if(match.challenged.equals(user)) {
+            Match.findByIdAndUpdate(req.body.m_id, {$set: {challenged_msg: req.body.msg}})
+            .exec((err, m) => {
+                res.json({
+                    msg: 'msg post successfully'
+                })
+            });
+        }
+    })
 });
-
 
 
 // admitting defeat
@@ -100,7 +118,10 @@ router.post('/admitDefeate', (req, res) => {
                     let lp = tournament.balance * 10 + 1;
                     FUNC.calculateLeaderPoints(info.winner, lp, () => {
                         FUNC.advanceStage(tournament._id, `${req.app.locals.dat.basePath}/public/matchImages`, () => {
-                            res.redirect('/dashboard');
+                            res.json({
+                                msg : 'admitted defeat successfully!',
+                                status : 1
+                            })
                         })
                     });
                 });
@@ -112,7 +133,10 @@ router.post('/admitDefeate', (req, res) => {
                     let lp = tournament.balance * 10 + 1;
                     FUNC.calculateLeaderPoints(info.winner, lp, () => {
                         FUNC.advanceStage(tournament._id, `${req.app.locals.dat.basePath}/public/matchImages`, () => {
-                            res.redirect('/dashboard');
+                            res.json({
+                                msg : 'admitted defeat successfully!',
+                                status : 1
+                            })
                         })
                     });
                 });
@@ -125,7 +149,10 @@ router.post('/admitDefeate', (req, res) => {
                 let reward = FUNC.calculateReward(info.bp);
                 FUNC.calculateBalance(info.winner, reward.m_bp, 1, "Won in Match", () => {
                     FUNC.calculateLeaderPoints(info.winner, reward.m_lp, () => {
-                        res.redirect('/dashboard');
+                        res.json({
+                            msg : 'admitted defeat successfully!',
+                            status : 1
+                        })
                     });
                 });
             });
@@ -135,13 +162,17 @@ router.post('/admitDefeate', (req, res) => {
                 let reward = FUNC.calculateReward(info.bp);
                 FUNC.calculateBalance(info.winner, reward.m_bp, 1, "Won in Match", () => {
                     FUNC.calculateLeaderPoints(info.winner, reward.m_lp, () => {
-                        res.redirect('/dashboard');
+                        res.json({
+                            msg : 'admitted defeat successfully!',
+                            status : 1
+                        })
                     });
                 });
             });
         }
     });
 });
+
 //claiming victory
 router.post('/claimVectory', imageUpload, (req, res) => {
     if (req.body.is_c == 1) {

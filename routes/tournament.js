@@ -90,9 +90,8 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/bracket/:id', (req, res) => {
-    console.log(req.params.id);
     FUNC.getTournamentTree(req.params.id, (data) => {
-        console.log(data);
+        //console.log(data);
         res.json({
             data: data,
             status : 1
