@@ -1,9 +1,11 @@
 const User = require('../models/user'); 
 
 exports.kick = (req, res, next) => {
-    let lx = req.cookies.logautx;
-    let ly = req.cookies.logauty;
-    User.count({ email: lx, connection_string: ly }, (err, c) => {
+    const headers = req.headers;
+    let lx = req.header('logautx')
+    let ly = req.header('logauty')
+
+     User.count({ email: lx, connection_string: ly }, (err, c) => {
         if (c > 0) {
             User.findOne({ email: lx })
             .exec((err, user) => {
@@ -17,13 +19,12 @@ exports.kick = (req, res, next) => {
                     });
                 }
                 else {
-                    req.data = { error : 'no such user found'};
+                    res.json({ error : 'no such user found'});
                 }
             });
         }
         else{
-            req.data = { error : 'violated auhtentication'};
-            res.redirect('/');
+            res.json({ error : 'violated auhtentication'});
         } 
-    });
+    }); 
 };

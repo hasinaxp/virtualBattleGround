@@ -22,6 +22,7 @@ function makeConnectionString() {
 
 //register
 router.post('/register', (req, res) => {
+    console.log(req.body);
     req.checkBody('full_name', 'Full Name is required!').notEmpty();
     req.checkBody('email', 'Email is required!').notEmpty();
     req.checkBody('email', 'This is not an email-address').isEmail();
@@ -32,31 +33,31 @@ router.post('/register', (req, res) => {
         console.log(errors);
         res.json({ errors: errors });
     } else {
-        emailExistence.check(req.body.email, function(err, t){
+        emailExistence.check(req.body.email, function (err, t) {
             //if(err) console.log(err)
-            if(!t)
-            {
+            if (false) {
                 let error = [{
-                    location : 'body',
-                    msg : 'this is not a valid email',
-                    param : 'email'
+                    location: 'body',
+                    msg: 'this is not a valid email',
+                    param: 'email'
                 }]
                 res.json({ errors: error });
-                
-            }else {
+
+            } else {
                 User.find({ email: req.body.email }, (err, any) => {
                     if (err) console.log(err);
                     if (any.length) {
-                        res.json({ errors: [{ msg: 'email-id is already registered' }, { msg: 'try other email-id' }] });
+                        res.json({ errors: [{ msg: 'email-id is already registered', param: 'email' }, { msg: 'try other email-id', param: 'email' }] });
                     }
                     else {
                         let user = new User();
+                        user.user_type = 'normal';
                         user.full_name = FUNC.protectedString(req.body.full_name);
                         user.email = FUNC.protectedString(req.body.email);
                         user.password = FUNC.protectedString(req.body.password);
                         user.connection_string = 'theBrightSun';
                         let fld = FUNC.makeString('user');
-                        user.folder =fld;
+                        user.folder = fld;
                         user.image = 'default.jpg';
                         user.date = Date.now();
                         let newPath = req.app.locals.dat.basePath + '/public/user/' + fld;
@@ -69,53 +70,65 @@ router.post('/register', (req, res) => {
                             bcrypt.hash(user.password, salt, function (err, hash) {
                                 user.password = hash;
                                 user.save((err, ur) => {
-        
-                                    if(err) console.log(err);
-                                    if(ur){
+
+                                    if (err) console.log(err);
+                                    if (ur) {
                                         res.json({
                                             success: ' Registration successful.'
                                         });
                                     }
                                 });
                             });
-                        });          
+                        });
                     }
-                });         
+                });
             }
-        });    
+        });
     }
 });
 
 //login
 router.post('/login', (req, res, next) => {
-    let emailAddress = FUNC.protectedString(req.body.email);
-    let password = FUNC.protectedString(req.body.password);
-    User.findOne({ email: emailAddress }, (err, user) => {
-        if (err) throw err;
-        if (user) {
-            bcrypt.compare(password, user.password, (err, result) => {
-                if (err) throw err;
-                if (result) {
-                    //console.log('password matched!');
-                    res.cookie('logautx', user.email);
-                    res.cookie('logauti', user._id.toString());
-                    res.cookie('logauty', user.connection_string);
-                    User.findByIdAndUpdate(user._id, { $set: { date: Date.now() } }, (err, lg) => {
-                        if (err) console.log(err);
-                        res.redirect('/dashboard');
-                    });
-                }
-                else {
-                    console.log('wrong password!');
-                    res.redirect('/');
-                }
-            });
-        }
-        else {
-            console.log('wrong email address!');
-            res.redirect('/');
-        }
-    });
+    req.checkBody('email', 'Email is required!').notEmpty();
+    req.checkBody('email', 'This is not an email-address').isEmail();
+    req.checkBody('password', 'Password is required').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        console.log(errors);
+        res.json({ errors: errors });
+    } else {
+        let emailAddress = FUNC.protectedString(req.body.email);
+        let password = FUNC.protectedString(req.body.password);
+        User.findOne({ email: emailAddress }, (err, user) => {
+            if (err) throw err;
+            if (user) {
+                bcrypt.compare(password, user.password, (err, result) => {
+                    if (err) throw err;
+                    if (result) {
+                        //console.log('password matched!');
+                        res.cookie('logautx', user.email);
+                        res.cookie('logauti', user._id.toString());
+                        res.cookie('logauty', user.connection_string);
+                        User.findByIdAndUpdate(user._id, { $set: { date: Date.now() } }, (err, lg) => {
+                            if (err) console.log(err);
+                            res.json({
+                                success: ' Sign In successful.',
+                                id : user._id.toString(),
+                                connection_string : user.connection_string,
+                                email :  user.email,
+                        });
+                        });
+                    }
+                    else {
+                        res.json({errors :[{param: 'password', msg: 'wrong password!'}]});
+                    }
+                });
+            }
+            else {
+                res.json({errors :[{param: 'email', msg: 'email is not registered!'}]});
+            }
+        });
+    }
 });
 //google login
 
@@ -123,7 +136,7 @@ router.post('/login/google', (req, res) => {
     console.log(req.body);
     res.json({
         success: 1,
-        data : req.body
+        data: req.body
     })
 });
 

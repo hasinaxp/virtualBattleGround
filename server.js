@@ -29,6 +29,17 @@ const port = credentials.port;
 const host = credentials.host;
 //app Creation
 const app = express();
+//cross origin access
+app.use(function (req, res, next) {
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Expose-Headers', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    next();
+});
 
 //loading view engine
 app.set('view engine', 'pug');
@@ -36,73 +47,58 @@ app.set('view engine', 'pug');
 //public folder
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'views')));
-
+app.use(express.static(path.join(__dirname, 'vbg-front/build')));
 //set up local
 app.locals.dat = {
     basePath: path.resolve(),
-    baseUrl : `${host}:${port}`,
-    stringArray : []
+    baseUrl: `${host}:${port}`,
+    stringArray: []
 }
 
 //set up middle-wares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(cookieParser());
-
 app.use(expressValidator());
 
 //------------------------routes ------------------------------------------------
 
-//setup home route
-app.get('/', (req, res) => {
-    res.render('home', {
-        pageTitle: 'home'
-    });
-});
-app.get('/rule', (req, res) => {
-    res.render('rule', {
-        pageTitle: 'rules',
-        subject : 'RULES'
-    });
-});
-//dashboard route
-let dashboardRoute = require('./routes/dashboard');
-app.use('/dashboard', dashboardRoute);
-//match route
-let matchRoute = require('./routes/match');
-app.use('/match', matchRoute);
-//profile route
-let profileRoute = require('./routes/profile');
-app.use('/profile', profileRoute);
-//Log route
-let logRoute = require('./routes/log');
-app.use('/log', logRoute);
-//wallet route
-let walletRoute = require('./routes/wallet');
-app.use('/wallet', walletRoute);
-//leaderboard route
-let leaderboardRoute = require('./routes/leaderboard');
-app.use('/leaderboard', leaderboardRoute);
-//tournament route
-let tournamentRoute = require('./routes/tournament');
-app.use('/tournament', tournamentRoute);
-
-//admin route
-let adminRoute = require('./routes/admin');
-app.use('/admin', adminRoute);
-
-
-//------------------------api routes------------------------------------------------
-
 let signRoute = require('./routes/api/sign');
-app.use('/func/sign', signRoute);
+app.use('/api/sign', signRoute);
 
 let infoRoute = require('./routes/api/info');
-app.use('/func/info', infoRoute);
+app.use('/api/info', infoRoute);
+
+let dashboardAPIRoute = require('./routes/api/dashboard');
+app.use('/api/dashboard', dashboardAPIRoute);
+
+let tournamentAPIRoute = require('./routes/api/tournament');
+app.use('/api/tournament', tournamentAPIRoute);
+
+let profileAPIRoute = require('./routes/api/profile');
+app.use('/api/profile', profileAPIRoute);
+
+let matchAPIRoute = require('./routes/api/match');
+app.use('/api/match', matchAPIRoute);
+
+let logAPIRoute = require('./routes/api/log');
+app.use('/api/log', logAPIRoute);
+
+let walletAPIRoute = require('./routes/api/wallet');
+app.use('/api/wallet', walletAPIRoute);
+
+let leaderboardAPIRoute = require('./routes/api/leaderboard');
+app.use('/api/leaderboard', leaderboardAPIRoute);
 
 
+let adminAPIRoute = require('./routes/api/admin');
+app.use('/api/admin', adminAPIRoute);
 
+//---------------------client app------------------------------------
+//setup home route
+app.get('*', (req, res) => {
+    res.sendFile(__dirname +'/vbg-front/build/index.html')
+});
 
 
 
@@ -122,14 +118,16 @@ io.on('connection', function (socket) {
     socket.emit('initChat', { hello: 'world' });
     socket.on('chatResponse', function (data) {
         let tempEvent = "msgcame" + data.chatId;
-        Chat.findById(data.chatId, (err, chatList) => {
-            if (err) console.log(err);
-            if (chatList) {
-                io.sockets.emit(tempEvent, {
-                    chat: chatList
-                });
-            }
-        });
+        Chat.findById(data.chatId)
+            .populate('log.name')
+            .exec((err, chatList) => {
+                if (err) console.log(err);
+                if (chatList) {
+                    io.sockets.emit(tempEvent, {
+                        chat: chatList
+                    });
+                }
+            });
     });
     socket.on('chatRequest', (data) => {
         if (data) {
@@ -143,7 +141,9 @@ io.on('connection', function (socket) {
                 if (err) console.log(err);
                 if (done) {
                     let tempEvent = "msgcame" + data.chatId;
-                    Chat.findById(data.chatId, (err, chatList) => {
+                    Chat.findById(data.chatId)
+                    .populate('log.name')
+                     .exec((err, chatList) => {
                         if (err) console.log(err);
                         if (chatList) {
                             io.sockets.emit(tempEvent, {

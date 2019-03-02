@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const authentication = require('../../controls/authenticate');
 const router = express.Router();
 const FUNC = require('../../controls/functions');
@@ -20,13 +21,27 @@ router.post('/getRequirement', (req, res) => {
     })
 });
 
-router.post('/getProfile', (req, res) => {
-    User.findById(req.body.gameId, (err, user) => {
-        if (err) res.json({ error: err });
-        else{
-            let profileImgPath = `../user/${user.folder}/${user.image}`;
-            res.json({ name: user.full_name, image: profileImgPath, status: true });
-        } 
+router.post('/getUser', (req, res) => {
+    console.log(req.data._user)
+    res.json(req.data._user);
+});
+router.post('/getGames', (req, res) => {
+    Game.find({}, (err, games) => {
+        if (err) console.log(err);
+        let gameList = [];
+        games.forEach(game => {
+
+            let hasgame = false;
+            req.data._user.games.forEach(x => {
+                if (game._id.equals(x._id)) {
+                    hasgame = true;
+                }
+            });
+            if (hasgame) {
+                gameList.push(game);
+            }
+        });
+    res.json(gameList);
     });
 });
 
@@ -55,7 +70,7 @@ router.post('/getChallangerList', (req, res) => {
             });
     }
     else {
-        User.find({ 'games._id': req.body.gameId, full_name: { $regex: req.body.name, $options: "i" } }).sort({ date: -1 })
+        User.find({ 'games._id': req.body.game_id, full_name: { $regex: req.body.name, $options: "i" } }).sort({ date: -1 })
             .exec((err, users) => {
                 if (err) res.json({ error: err });
                 else {
@@ -63,7 +78,7 @@ router.post('/getChallangerList', (req, res) => {
                         let dat = {};
                         dat.full_name = FUNC.protectedString(i.full_name);
                         dat._id = i._id;
-                        dat.image = `../user/${i.folder}/${i.image}`;
+                        dat.image = `user/${i.folder}/${i.image}`;
                         dat.games = i.games;
                         if (i._id.equals(req.body.u_id)) {
                             //do nothing

@@ -25,13 +25,13 @@ function drawBrackets() {
                 titles: data.data.rounds,
                 rounds: data.data.tree,
                 color_title: 'white',
-                border_color: '#46CFB0',
+                border_color: '#444',
                 color_player: 'white',
-                bg_player: '#46CFB0',
+                bg_player: '#444',
                 color_player_hover: 'white',
                 bg_player_hover: '#4655E9',
-                border_radius_player: '3px',
-                border_radius_lines: '5px',
+                border_radius_player: '13px',
+                border_radius_lines: '25%',
             });
         }
     });

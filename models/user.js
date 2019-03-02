@@ -6,6 +6,7 @@ let userSchema = new schema({
     image: { type: String, default: "default.png" },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    user_type: {type: String, required: true},
     connection_string: { type: String, default: 'ieatpoison' },
     phone: { type: String, default : '' },
     address: {type: String, default: ''},
