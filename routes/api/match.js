@@ -13,9 +13,7 @@ router.use(authenticate.kick);
 
 //--------multer storage defination----------------------------------
 const imageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './public/matchImages/' /*+ file.originalname.split('.')[0]*/ );
-    },
+    destination: './public/matchImages/',
     filename: (req, file, cb) => {
         //let nameFile = req.data._user.email + path.extname(file.originalname);
         // req.data.imageAddress = '/matchImages/' + req.body.m_id + '/' + nameFile;
@@ -190,6 +188,9 @@ router.post('/admitDefeat', (req, res) => {
 //claiming victory
 router.post('/claimVectory', imageUpload, (req, res) => {
     //console.log(req)
+    let image = `${req.app.locals.dat.basePath}/public${req.data.imageAddress}`
+    console.log("------original image---------");
+    console.log(image);
     if (req.body.is_c == 1) {
         Match.findByIdAndUpdate(req.body.m_id, { $set: { state: 4, challenger_evidance: req.data.imageAddress, challenger_evidance_state: true } }, (err, m) => {
             let image = `${req.app.locals.dat.basePath}/public${req.data.imageAddress}`
