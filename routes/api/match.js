@@ -24,6 +24,8 @@ const imageStorage = multer.diskStorage({
         let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
         req.data = data;
         req.data.imageAddress = '/matchImages/' + req.data.name+req.data.exten;
+        console.log("=====original image address======");
+        console.log(req.data.imageAddress);
         cb(null, req.data.name + data.exten);
     }
 });
@@ -191,6 +193,8 @@ router.post('/claimVectory', imageUpload, (req, res) => {
     if (req.body.is_c == 1) {
         Match.findByIdAndUpdate(req.body.m_id, { $set: { state: 4, challenger_evidance: req.data.imageAddress, challenger_evidance_state: true } }, (err, m) => {
             let image = `${req.app.locals.dat.basePath}/public${req.data.imageAddress}`
+            console.log("------original image---------");
+            console.log(image);
             jimp.read(image, function (err, lenna) {
                 if (err) throw err;
                 lenna
