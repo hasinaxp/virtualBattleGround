@@ -29,12 +29,14 @@ router.post('/getGames', (req, res) => {
     Game.find({}, (err, games) => {
         if (err) console.log(err);
         let gameList = [];
-        games.forEach(game => {
-
+        games.forEach(game_data => {
             let hasgame = false;
+            var game = JSON.parse(JSON.stringify(game_data));
             req.data._user.games.forEach(x => {
-                if (game._id.equals(x._id)) {
+                if (game._id == x._id) {
                     hasgame = true;
+                    game.contact_string=x.contact_string;
+                    console.log(x.contact_string);
                 }
             });
             if (hasgame) {

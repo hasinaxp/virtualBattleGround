@@ -4,17 +4,25 @@ const path = require('path');
 const jimp = require('jimp');
 const FUNC = require('../../controls/functions');
 const router = express.Router();
+var rand = require("random-key");
 
 //setting up the storage
 const gameStorage = multer.diskStorage({
     destination: './public/gameimg/',
     filename: (req, file, cb) => {
-        let data = { exten: path.extname(file.originalname) }
+        let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
         req.data = data;
-        cb(null, req.body.name + data.exten);
+        cb(null, req.data.name + data.exten);
     }
 });
-
+const tournamentStorage = multer.diskStorage({
+    destination: './public/tournamentimg/',
+    filename: (req, file, cb) => {
+        let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
+        req.data = data;
+        cb(null, req.data.name + data.exten);
+    }
+});
 const prepareStorage = (req, res, next) => {
     req.imageStringArray = [];
     return next();
@@ -22,11 +30,17 @@ const prepareStorage = (req, res, next) => {
 const feedStorage = multer.diskStorage({
     destination: './public/feedimage/',
     filename: (req, file, cb) => {
+        let filename = rand.generate(7);
         let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
         req.data = data;
+        
         cb(null, data.name + data.exten);
     }
 });
+
+const tournamentimageUpload = multer({
+    storage: tournamentStorage
+}).single('image');
 const gameimageUpload = multer({
     storage: gameStorage
 }).single('image');
@@ -208,10 +222,11 @@ router.post('/game', (req, res) => {
 });
 //game add route
 router.post('/game/add', gameimageUpload, (req, res) => {
-    req.checkBody('name', 'name is required').notEmpty()
-    req.checkBody('platform', 'name is required').notEmpty()
-    req.checkBody('requirement', 'name is required').notEmpty()
-    req.checkBody('player_count', 'name is required').notEmpty()
+    req.checkBody('name', 'Game name is required').notEmpty()
+    req.checkBody('platform', 'Platform is required').notEmpty()
+    // req.checkBody('requirement', 'Game requirement is required').notEmpty()
+    req.checkBody('player_count', 'Player count is required').notEmpty()
+
     const errors = req.validationErrors()
     if (errors) {
         res.json({
@@ -219,15 +234,29 @@ router.post('/game/add', gameimageUpload, (req, res) => {
             errors
         })
     } else {
+       
+        if(!req.data || !req.data.name || !req.data.exten) { 
+            return res.json({error:1,message:"Game image is required"});
+        }
         let game = new Game();
         game.name = req.body.name;
-        game.image = req.body.name + req.data.exten;
-        game.requirement = req.body.requirement;
+        game.image = req.data.name + req.data.exten;
+        game.requirement = 'ID';//req.body.requirement;
         game.platform = req.body.platform;
         game.player_count = req.body.player_count;
 
         game.save((err) => {
-            if (err) console.log(err);
+            if (err) {
+                if(err.code == 11000) {
+                    return res.json({errors :[{param: 'name', msg: 'Game already exist'}]});
+                } else {
+                    res.json({
+                        error: '1',
+                        message: 'some internal error occured'
+                    })
+                }
+                console.log(err);
+            }
             else {
                 res.json({
                     status: 'ok',
@@ -335,11 +364,12 @@ router.post('/tournament', (req, res) => {
         })
 })
 
-router.post('/tournament/create', (req, res) => {
+router.post('/tournament/create',tournamentimageUpload, (req, res) => {
     req.checkBody('game_id', 'game is required!').notEmpty()
     req.checkBody('balance', 'balance is required!').notEmpty()
     req.checkBody('rules', 'rules is required!').notEmpty()
-    req.checkBody('player_count', 'player_count is required!').notEmpty()
+    req.checkBody('player_count', 'player_count is required!').notEmpty();
+    req.checkBody('entry_fee', 'Entry fee is required!').notEmpty()
     const errors = req.validationErrors()
     if (errors) {
         res.json({
@@ -348,10 +378,15 @@ router.post('/tournament/create', (req, res) => {
         })
     } else {
         let tournament = new Tournament();
+        if(req.body.entry_fee > (req.body.balance/10)) {
+            return res.json({errors :[{param: 'entry_fee', msg: 'Entry fee must be less than 10% of prize'}]});
+        }
         tournament.balance = req.body.balance;
         tournament.player_count = req.body.player_count;
         tournament.game = req.body.game_id;
         tournament.rules = req.body.rules;
+        tournament.entry_fee = req.body.entry_fee;
+        tournament.image = req.data.name + req.data.exten;
         //calculating maximum number of stages
         let i = 0, cap = req.body.player_count;
         let match_array = [];

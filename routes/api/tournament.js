@@ -37,10 +37,9 @@ router.post('/join', (req, res) => {
             errors
         })
     } else {
-
         let id = mongoose.Types.ObjectId(req.data._user._id);
         FUNC.getTournamentStatus(req.body.tournament_id, (tournament) => {
-            if (req.data._user.balance > tournament.balance) {
+            if (!tournament.players || tournament.players.length < tournament.player_count) {
                 FUNC.calculateBalance(req.data._user._id, tournament.balance, -1, "Joined tournament", () => {
                     Tournament.findByIdAndUpdate(req.body.tournament_id, { $push: { players: id }, $inc: { join_counter: 1 } })
                         .exec((err, joined) => {
@@ -52,7 +51,6 @@ router.post('/join', (req, res) => {
                                 })
                             } else {
                                 FUNC.initTournament(req.body.tournament_id, `${req.app.locals.dat.basePath}/public/matchImages`, (tournament) => {
-                                    //console.log(tournament);
                                     res.json({
                                         status: 'ok',
                                         msg : 'tournament joined successfully'
@@ -63,7 +61,7 @@ router.post('/join', (req, res) => {
                 });
             } else {
                 res.json({
-                    status: 0
+                    status: 0,
                 });
             }
         });

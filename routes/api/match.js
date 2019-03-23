@@ -14,13 +14,17 @@ router.use(authenticate.kick);
 //--------multer storage defination----------------------------------
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './public/matchImages/' + file.originalname.split('.')[0]);
+        cb(null, './public/matchImages/' /*+ file.originalname.split('.')[0]*/ );
     },
     filename: (req, file, cb) => {
-        let nameFile = req.data._user.email + path.extname(file.originalname);
-        req.data.imageAddress = '/matchImages/' + req.body.m_id + '/' + nameFile;
+        //let nameFile = req.data._user.email + path.extname(file.originalname);
+        // req.data.imageAddress = '/matchImages/' + req.body.m_id + '/' + nameFile;
         //console.log(nameFile);
-        cb(null, nameFile);
+        // cb(null, nameFile);
+        let data = { exten: path.extname(file.originalname), name: FUNC.makeString('media') }
+        req.data = data;
+        req.data.imageAddress = '/matchImages/' + req.data.name+req.data.exten;
+        cb(null, req.data.name + data.exten);
     }
 });
 const imageUpload = multer({
@@ -41,6 +45,9 @@ router.post('/m/:match_id', (req, res) => {
         .populate('challenged challenger game chatroom')
         .exec((err, match) => {
             if (err) console.log(err);
+            if(!match) {
+                return;
+            }
             let isChallenger = false;
             let contactReferance = '';
             if (req.data._user._id.equals(match.challenger._id)) {
@@ -54,11 +61,9 @@ router.post('/m/:match_id', (req, res) => {
                     contactReferance = g.contact_string;
                 }
             });
-
             let matchTime = new Date(match.date);
             let matchDate = matchTime.getUTCDay() + ' / ' + matchTime.getMonth() + ' / ' + matchTime.getFullYear();
             matchDate += ` - ${matchTime.getUTCHours()} : ${matchTime.getUTCMinutes()}`
-
             res.json({
                 status: 'ok',
                 game: match.game,

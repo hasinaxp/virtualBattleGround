@@ -22,11 +22,12 @@ router.post('/', (req, res) => {
         let gameList = [];
         let gamePocket = [];
         games.forEach(game => {
-
+            game = JSON.parse(JSON.stringify(game));
             let hasgame = false;
             req.data._user.games.forEach(x => {
-                if (game._id.equals(x._id)) {
+                if (game._id == x._id) {
                     hasgame = true;
+                    game.contact_string=x.contact_string;
                 }
             });
             if (!hasgame) {
@@ -36,7 +37,6 @@ router.post('/', (req, res) => {
                 gamePocket.push(game);
             }
         });
-
         //loading challange log
         Match.find({ $or: [{ challenger: req.data._user._id }, { challenged: req.data._user._id }] })
             .populate('challenged challenger game')
@@ -75,7 +75,7 @@ router.post('/', (req, res) => {
                     if (m.state == 1 || m.state == 4)
                         challengeOngoing.push(clng);
                 });
-                //console.log(challengeData);
+              
                 Feed.find({})
                     .exec((err, feeds) => {
                         if (err) console.log(err);
@@ -141,7 +141,44 @@ router.get('/feed/:id', (req, res) => {
             })
         })
 });
-
+//dashboard game update id
+router.post('/game/updateid', (req, res) => {
+    req.checkBody('game_id', 'game_id is required').notEmpty()
+    req.checkBody('contact_string', 'contact_string is required').notEmpty()
+    const errors = req.validationErrors()
+    if(errors) {
+        res.json({
+            status: 'fail',
+            errors
+        })
+    } else {
+        User.findOne({"games.contact_string":FUNC.protectedString(req.body.contact_string)}, (err, raw) => {
+            if(raw) {
+                return res.json({
+                    status: 'fail',
+                    msg:'This gameid already exist'
+                })  
+            }
+            User.findByIdAndUpdate( req.data._user._id, {
+                $pull: {
+                    games: { _id: mongoose.Types.ObjectId(req.body.game_id) }
+                },
+                $push: {
+                    games: {
+                        _id: mongoose.Types.ObjectId(req.body.game_id),
+                        contact_string: FUNC.protectedString(req.body.contact_string)
+                    }
+                }
+            }, (err, raw) => {
+                if (err) console.log(err);
+                res.json( {
+                    status: 'ok',
+                    msg: 'gameid updated successfully!'
+                })
+            });
+        });        
+    }
+});
 //dashboard game add route
 router.post('/game/add', (req, res) => {
     req.checkBody('game_id', 'game_id is required').notEmpty()
@@ -153,20 +190,28 @@ router.post('/game/add', (req, res) => {
             errors
         })
     } else {
-        User.findByIdAndUpdate( req.data._user._id, {
-            $push: {
-                games: {
-                    _id: mongoose.Types.ObjectId(req.body.game_id),
-                    contact_string: FUNC.protectedString(req.body.contact_string)
-                }
+        User.findOne({"games.contact_string":FUNC.protectedString(req.body.contact_string)}, (err, raw) => {
+            if(raw) {
+                return res.json({
+                    status: 'fail',
+                    msg:'This gameid already exist'
+                })  
             }
-        }, (err, raw) => {
-            if (err) console.log(err);
-            res.json( {
-                status: 'ok',
-                msg: 'game added successfully!'
-            })
-        });
+            User.findByIdAndUpdate( req.data._user._id, {
+                $push: {
+                    games: {
+                        _id: mongoose.Types.ObjectId(req.body.game_id),
+                        contact_string: FUNC.protectedString(req.body.contact_string)
+                    }
+                }
+            }, (err, raw) => {
+                if (err) console.log(err);
+                res.json( {
+                    status: 'ok',
+                    msg: 'game added successfully!'
+                })
+            });
+        });        
     }
 });
 //dashboard game remove route

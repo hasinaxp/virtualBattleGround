@@ -22,38 +22,37 @@ function makeConnectionString() {
 
 //register
 router.post('/register', (req, res) => {
-    console.log(req.body);
-    req.checkBody('full_name', 'Full Name is required!').notEmpty();
+    req.checkBody('full_name', 'Name is required!').notEmpty();
     req.checkBody('email', 'Email is required!').notEmpty();
-    req.checkBody('email', 'This is not an email-address').isEmail();
+    req.checkBody('email', 'This is not a valid email').isEmail();
     req.checkBody('password', 'Password is required').notEmpty();
-    req.checkBody('confirm', 'paswords does not match').equals(req.body.password);
+    req.checkBody('confirm', 'Passwords does not match').equals(req.body.password);
     let errors = req.validationErrors();
     if (errors) {
         console.log(errors);
         res.json({ errors: errors });
     } else {
-        emailExistence.check(req.body.email, function (err, t) {
-            //if(err) console.log(err)
-            if (false) {
-                let error = [{
-                    location: 'body',
-                    msg: 'this is not a valid email',
-                    param: 'email'
-                }]
-                res.json({ errors: error });
-
-            } else {
-                User.find({ email: req.body.email }, (err, any) => {
-                    if (err) console.log(err);
+        // emailExistence.check(req.body.email, function (err, t) {
+            // if (t == false) {
+            //     let error = [{
+            //         location: 'body',
+            //         msg: 'This email does not exist',
+            //         param: 'email'
+            //     }]
+            //     res.json({ errors: error });
+           // } else {
+                User.find({ email: req.body.email.trim().toLowerCase() }, (err, any) => {
+                    if (err) {
+                        res.json({ errors: [{ msg: 'Internal error occured.please try again', param: 'email' }] });
+                    }
                     if (any.length) {
-                        res.json({ errors: [{ msg: 'email-id is already registered', param: 'email' }, { msg: 'try other email-id', param: 'email' }] });
+                        res.json({ errors: [{ msg: 'This email is already registered', param: 'email' }] });
                     }
                     else {
                         let user = new User();
                         user.user_type = 'normal';
                         user.full_name = FUNC.protectedString(req.body.full_name);
-                        user.email = FUNC.protectedString(req.body.email);
+                        user.email = FUNC.protectedString(req.body.email).trim().toLowerCase();
                         user.password = FUNC.protectedString(req.body.password);
                         user.connection_string = 'theBrightSun';
                         let fld = FUNC.makeString('user');
@@ -61,7 +60,6 @@ router.post('/register', (req, res) => {
                         user.image = 'default.jpg';
                         user.date = Date.now();
                         let newPath = req.app.locals.dat.basePath + '/public/user/' + fld;
-                        //console.log(newPath);
                         if (!fs.existsSync(newPath)) {
                             fs.mkdirSync(newPath);
                         }
@@ -70,7 +68,6 @@ router.post('/register', (req, res) => {
                             bcrypt.hash(user.password, salt, function (err, hash) {
                                 user.password = hash;
                                 user.save((err, ur) => {
-
                                     if (err) console.log(err);
                                     if (ur) {
                                         res.json({
@@ -82,8 +79,8 @@ router.post('/register', (req, res) => {
                         });
                     }
                 });
-            }
-        });
+           // }
+        //});
     }
 });
 

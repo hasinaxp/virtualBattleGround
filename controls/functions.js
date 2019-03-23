@@ -253,7 +253,6 @@ function genMatch(challenger, challenged, balance, game, type, matchDirPath, tou
                                 if (!fs.existsSync(newPath)) {
                                     fs.mkdirSync(newPath);
                                 }
-                                console.log('match registered successfully!');
                                 cb(m);
                             }
                         });
@@ -268,7 +267,6 @@ function genMatch(challenger, challenged, balance, game, type, matchDirPath, tou
         match.save((err, m) => {
             if (err) console.log(err);
             else {
-                console.log('match registered successfully!');
                 cb(m);
             }
         });
@@ -371,13 +369,11 @@ exports.getTournamentsUser = (user_id, games, cb) => {
         .exec((err, tournaments) => {
             if (err) console.log(err);
             tournaments.forEach(tour => {
-                //console.log(tour.players);
-                //console.log(user_id.toString());
                 if (!tour.has_ended) {
                     let players = tour.players.map(p => p.toString());
                     if (_.contains(players, user_id.toString()))
                         perticipationTournaments.push(tour);
-                    else
+                    else /* if(!tour.players || tour.players.length < tour.player_count)*/
                         newTournaments.push(tour);
                 }
             });
@@ -385,7 +381,6 @@ exports.getTournamentsUser = (user_id, games, cb) => {
                 participating: perticipationTournaments,
                 not_participating: newTournaments
             }
-            //console.log(data);
             cb(data);
         });
 };
@@ -395,20 +390,23 @@ exports.initTournament = (tournamentId, matchDirPath, cb) => {
         .exec((err, tournament) => {
             if (err) console.log(err);
             //creating player pairs
+            console.log(tournament.players.length);
+            
             let pairs = [];
             for (let i = 0; i < tournament.join_counter - 2; i += 2) {
                 let pair = {};
                 pair.first = tournament.players[i];
                 pair.second = tournament.players[i + 1];
                 pairs.push(pair);
-                console.log(pair);
             }
-            console.log(pairs);
+            
             let matchIds = [];
             async.eachSeries(pairs, (pair, callback) => {
+                console.log("pairs-----------------");
                 console.log(pair);
                 genMatch(pair.first, pair.second, tournament.balance, tournament.game, 'tournament', matchDirPath, tournamentId, (m) => {
                     matchIds.push(mongoose.Types.ObjectId(m._id));
+                    console.log("---saving completed----");
                     callback();
                 });
             }, (err) => {
@@ -691,7 +689,7 @@ exports.getTournamentTree = (tournamentId, cb) => {
         });
 };
 
-exports.isInTournament = (tournamentId, playerId, cb) => {
+exports.isInTournament = (tournamentId, playerId, cb) => { 
     Tournament.findById(tournamentId)
         .exec((err, tournament) => {
             if (err) console.log(err);

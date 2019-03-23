@@ -16,7 +16,9 @@ let tournamentSchema = new schema({
     matches: [{type: schema.Types.ObjectId, ref: 'match'}],
     date : {type: Date, default: Date.now},
     matches_per_round : [{type: Number, default: 1}],
-    has_ended : {type: Boolean, default: false}
+    has_ended : {type: Boolean, default: false},
+    image : { type: String, required : true },
+    entry_fee : { type: String, required : true },
 });
 
 let Tournament = module.exports = mongoose.model('tournament', tournamentSchema);

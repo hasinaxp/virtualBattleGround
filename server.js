@@ -8,14 +8,13 @@ const multer = require('multer');
 const path = require('path');
 
 //database configaration file
-const config = require('./config/database');
-const credentials = require('./config/credentials');
-
+// const config = require('./config/database');
+const credentials = require('./config/credentials.json')[process.env.NODE_ENV || 'dev'];
 //database connection
-mongoose.connect(config.database);
+mongoose.connect(credentials.database);
 let db = mongoose.connection;
 //check connection
-db.once('open', function () {
+db.once('open', function () { 
     console.log('connected to mongoDB');
 })
 //check for db err
@@ -40,7 +39,6 @@ app.use(function (req, res, next) {
 
     next();
 });
-
 //loading view engine
 app.set('view engine', 'pug');
 
@@ -60,7 +58,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(expressValidator());
-
 //------------------------routes ------------------------------------------------
 
 let signRoute = require('./routes/api/sign');
