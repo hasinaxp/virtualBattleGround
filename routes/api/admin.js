@@ -370,6 +370,7 @@ router.post('/tournament/create',tournamentimageUpload, (req, res) => {
     req.checkBody('rules', 'rules is required!').notEmpty()
     req.checkBody('player_count', 'player_count is required!').notEmpty();
     req.checkBody('entry_fee', 'Entry fee is required!').notEmpty()
+    
     const errors = req.validationErrors()
     if (errors) {
         res.json({
@@ -388,6 +389,7 @@ router.post('/tournament/create',tournamentimageUpload, (req, res) => {
         tournament.entry_fee = req.body.entry_fee;
         tournament.image = req.data.name + req.data.exten;
         tournament.custom_fields = req.body.custom_fields;
+        tournament.is_bracket_needed = req.body.is_bracket_needed || true;
         //calculating maximum number of stages
         let i = 0, cap = req.body.player_count;
         let match_array = [];

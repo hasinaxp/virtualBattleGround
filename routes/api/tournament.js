@@ -90,7 +90,8 @@ router.post('/:id', (req, res) => {
                     isPlaying: isInTournament,
                     rules: tournament.rules,
                     image: tournament.image,
-                    custom_fields: tournament.custom_fields
+                    custom_fields: tournament.custom_fields,
+                    is_bracket_needed: tournament.is_bracket_needed
                 });
             })
         });

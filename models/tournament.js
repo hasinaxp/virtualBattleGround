@@ -20,6 +20,7 @@ let tournamentSchema = new schema({
     image : { type: String, required : true },
     entry_fee : { type: String, required : true },
     custom_fields:{ type: String, required : false },
+    is_bracket_needed : {type: Boolean, default: true},
 });
 
 let Tournament = module.exports = mongoose.model('tournament', tournamentSchema);
