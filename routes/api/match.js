@@ -74,6 +74,7 @@ router.post('/m/:match_id', (req, res) => {
                 user_id: req.data._user._id,
                 chat_id: match.chatroom._id,
                 challenged: match.challenged,
+                image: match.image,
                 time: matchDate,
                 bet: match.balance,
                 sender: req.data._user._id,

@@ -88,7 +88,9 @@ router.post('/:id', (req, res) => {
                     time: tournament.date,
                     stage: tournament.stage,
                     isPlaying: isInTournament,
-                    rules: tournament.rules
+                    rules: tournament.rules,
+                    image: tournament.image,
+                    custom_fields: tournament.custom_fields
                 });
             })
         });

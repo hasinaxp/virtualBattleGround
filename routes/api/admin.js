@@ -387,6 +387,7 @@ router.post('/tournament/create',tournamentimageUpload, (req, res) => {
         tournament.rules = req.body.rules;
         tournament.entry_fee = req.body.entry_fee;
         tournament.image = req.data.name + req.data.exten;
+        tournament.custom_fields = req.body.custom_fields;
         //calculating maximum number of stages
         let i = 0, cap = req.body.player_count;
         let match_array = [];

@@ -19,6 +19,7 @@ let tournamentSchema = new schema({
     has_ended : {type: Boolean, default: false},
     image : { type: String, required : true },
     entry_fee : { type: String, required : true },
+    custom_fields:{ type: String, required : false },
 });
 
 let Tournament = module.exports = mongoose.model('tournament', tournamentSchema);

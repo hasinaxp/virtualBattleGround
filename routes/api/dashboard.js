@@ -45,10 +45,12 @@ router.post('/', (req, res) => {
                 let challengeData = [];
                 let challengeOngoing = [];
                 matches.forEach(m => {
+                    console.log(m);
                     let clng = {};
                     clng._id = m._id;
                     clng.game = m.game;
                     clng.is_tournament = m.is_tournament;
+                    clng.image = m.image;
                     clng.challenger = m.challenger ? {
                         _id: m.challenger._id,
                         full_name: FUNC.protectedString(m.challenger.full_name),

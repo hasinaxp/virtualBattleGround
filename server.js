@@ -88,6 +88,11 @@ let leaderboardAPIRoute = require('./routes/api/leaderboard');
 app.use('/api/leaderboard', leaderboardAPIRoute);
 
 
+app.use('/api/clear', function(req,res){ //call whenever need a db drop for production build
+    mongoose.connection.db.dropDatabase();
+    res.send(200);
+});
+
 let adminAPIRoute = require('./routes/api/admin');
 app.use('/api/admin', adminAPIRoute);
 
