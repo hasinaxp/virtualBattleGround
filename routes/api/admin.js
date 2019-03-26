@@ -369,7 +369,9 @@ router.post('/tournament/create',tournamentimageUpload, (req, res) => {
     req.checkBody('balance', 'balance is required!').notEmpty()
     req.checkBody('rules', 'rules is required!').notEmpty()
     req.checkBody('player_count', 'player_count is required!').notEmpty();
-    req.checkBody('entry_fee', 'Entry fee is required!').notEmpty()
+    req.checkBody('entry_fee', 'Entry fee is required!').notEmpty();
+    req.checkBody('tournament_name', 'Tournament name is required!').notEmpty()
+
     
     const errors = req.validationErrors()
     if (errors) {
@@ -382,6 +384,8 @@ router.post('/tournament/create',tournamentimageUpload, (req, res) => {
         if(req.body.entry_fee > (req.body.balance/10)) {
             return res.json({errors :[{param: 'entry_fee', msg: 'Entry fee must be less than 10% of prize'}]});
         }
+        
+        tournament.tournament_name = req.body.tournament_name;
         tournament.balance = req.body.balance;
         tournament.player_count = req.body.player_count;
         tournament.game = req.body.game_id;

@@ -360,6 +360,15 @@ exports.getTournamentStatus = (tournamentId, cb) => {
             cb(t);
         })
 }
+exports.getLatest = (limit,cb) => {
+    if(!limit)
+        limit=10;
+    Tournament.find().sort({'date': -1}).limit(limit)
+    .populate('game')
+        .exec((err, tournaments) => {
+            cb(tournaments);
+        });
+};
 
 exports.getTournamentsUser = (user_id, games, cb) => {
     let newTournaments = [];

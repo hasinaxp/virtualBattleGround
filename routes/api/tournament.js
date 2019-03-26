@@ -15,7 +15,6 @@ const Tournament = require('../../models/tournament');
 //---------routes------------------------------------------------------
 
 router.post('/', (req, res) => {
-    let profileImgPath = `/user/${req.data._user.folder}/${req.data._user.image}`;
     let myGames = [];
     req.data._user.games.forEach(g => myGames.push(mongoose.Types.ObjectId(g._id)));
     FUNC.getTournamentsUser(req.data._user._id, myGames, (data) => {
@@ -26,7 +25,14 @@ router.post('/', (req, res) => {
         });
     });
 });
-
+router.post('/public/latest', (req, res) => {
+    let myGames = [];
+    FUNC.getLatest(req.body.limit, (data) => {
+        res.json(
+            data
+        );
+    });
+});
 
 router.post('/join', (req, res) => {
     req.checkBody('tournament_id', 'tournament_id is required!').notEmpty()
@@ -89,6 +95,7 @@ router.post('/:id', (req, res) => {
                     stage: tournament.stage,
                     isPlaying: isInTournament,
                     rules: tournament.rules,
+                    tournament_name: tournament.tournament_name,
                     image: tournament.image,
                     custom_fields: tournament.custom_fields,
                     is_bracket_needed: tournament.is_bracket_needed

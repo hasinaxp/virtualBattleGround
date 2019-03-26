@@ -4,7 +4,9 @@ exports.kick = (req, res, next) => {
     const headers = req.headers;
     let lx = req.header('logautx')
     let ly = req.header('logauty')
-
+     if(req.url.includes("public")) {
+        return next();
+     }
      User.count({ email: lx, connection_string: ly }, (err, c) => {
         if (c > 0) {
             User.findOne({ email: lx })
