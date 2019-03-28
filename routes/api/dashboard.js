@@ -248,7 +248,7 @@ router.post('/game/challange', (req, res) => {
             status: 'fail'
         })
     } else {
-        if (req.body.balance <= req.data._user.balance) {
+        if (req.body.balance == 0 || req.body.balance <= req.data._user.balance) {
             FUNC.createMatch(req.body.challenger, req.body.challenged, req.body.balance, req.body.game_id, 'normal', 'not necessary', 123456, (match) => {
                 res.json({
                     status: 'ok'

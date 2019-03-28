@@ -14,7 +14,7 @@
   "author": "Spandan Mondal",
   "license": "ISC",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.2",
     "bcrypt": "^3.0.0",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",

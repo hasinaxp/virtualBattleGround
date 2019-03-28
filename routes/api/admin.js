@@ -5,7 +5,8 @@ const jimp = require('jimp');
 const FUNC = require('../../controls/functions');
 const router = express.Router();
 var rand = require("random-key");
-
+const mongoose = require('mongoose');
+var async = require("async");
 //setting up the storage
 const gameStorage = multer.diskStorage({
     destination: './public/gameimg/',
@@ -91,7 +92,65 @@ router.post('/match', (req, res) => {
         });
 })
 
-
+router.get('/listusers', (req, res) => {
+    User.find({user_type:'normal'},'image _id email full_name', (err, user) => {
+        res.send(user);
+    });
+});
+router.post('/addPlayer', (req, res) => {
+    req.checkBody('tournament_id', 'Tournament is required').notEmpty()
+    const errors = req.validationErrors()
+    if (errors) {
+        res.json({
+            status: 'fail',
+            errors
+        })
+    } else {
+            async.eachSeries(req.body.players, function(player, callback) {
+                FUNC.getTournamentStatus(req.body.tournament_id, (tournament) => {
+                    if (!tournament.players || tournament.players.length < tournament.player_count) {
+                        if(tournament.players && tournament.players.indexOf(player) > -1) {
+                            return callback();
+                        }
+                        FUNC.calculateBalance(player, tournament.balance, -1, "Joined tournament", () => {
+                                let id = mongoose.Types.ObjectId(player);
+                                Tournament.findByIdAndUpdate(req.body.tournament_id, { $push: { players: id }, $inc: { join_counter: 1 } })
+                                .exec((err, joined) => {
+                                    if (tournament.join_counter < tournament.player_count) {
+                                        callback();
+                                    } else {
+                                        FUNC.initTournament(req.body.tournament_id, `${req.app.locals.dat.basePath}/public/matchImages`, (tournament) => {
+                                            return res.json({
+                                                status: 'ok',
+                                                statuscode:112,
+                                                msg : 'Players added and tournament activated successfully'
+                                            });
+                                        });
+                                    }
+                                });
+                        });
+                    }  else {
+                        res.json({
+                            status: 0,
+                            statuscode:115,
+                        });
+                    }
+                });
+            },
+            function(err)
+            {
+                if(!err) {
+                    return res.json({
+                        status: 'ok',
+                        statuscode:113,
+                        msg : 'Players added successfully'
+                    });
+                } else {
+                    console.log(err);
+                }
+    });
+}
+});
 //cancel match...(if not tournament)
 router.get('/cancel/:id', (req, res) => {
     FUNC.isTournament(req.params.id, () => {
