@@ -285,7 +285,11 @@ router.post('/game/challange/decline', (req, res) => {
         });
     }
 });
-
+router.get('/chat/listusers', (req, res) => {
+    User.find({user_type:'normal'},'image _id email full_name folder', (err, user) => {
+        res.send(user);
+    });
+});
 //dashboard challenge accept route
 router.post('/game/challange/accept', (req, res) => {
     req.checkBody('match_id', 'match_id must be defined').notEmpty()
